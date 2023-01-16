@@ -54,14 +54,14 @@ int Write_pp(const _struct_polynomial_pp_* pp)
 {
 	int pp_size = 0;
 	pp_size += fmpz_bits(pp->cm_pp.G);
-	printf("|N| %d\n", fmpz_bits(pp->cm_pp.G));
+	// printf("|N| %d\n", fmpz_bits(pp->cm_pp.G));
 	pp_size += fmpz_bits(pp->cm_pp.g);
-	printf("|G| %d\n", fmpz_bits(pp->cm_pp.g));
+	// printf("|G| %d\n", fmpz_bits(pp->cm_pp.g));
 	pp_size += fmpz_bits(pp->p);
-	printf("|p| %d\n", fmpz_bits(pp->p));
+	// printf("|p| %d\n", fmpz_bits(pp->p));
 	for(int i=0;i<pp->n;i++) {
 		pp_size += fmpz_bits(pp->R[i]);
-		printf("|R[%d]| %d\n", i, fmpz_bits(pp->R[i]));
+		// printf("|R[%d]| %d\n", i, fmpz_bits(pp->R[i]));
 	}
 	printf("parameter size %d\n", pp_size);
 
@@ -139,6 +139,11 @@ int Read_Commit(const char* path, _struct_commit_* cm)
 //"./Txt/commit.txt"
 int Write_Commit(const char* path, const _struct_commit_* cm)
 {
+	int commit_size = 0;
+	commit_size += fmpz_bits(cm->C);
+
+	printf("commit size %d\n", commit_size);
+
 	FILE *fp;
 	int i = 0, flag = 1;
 
@@ -154,6 +159,18 @@ int Write_Commit(const char* path, const _struct_commit_* cm)
 int Write_proof(const _struct_proof_ *proof )
 {
 	int proof_size = 0;
+	proof_size += fmpz_bits(proof->Q);
+	for(int i=0; i<proof->n; i++){
+		proof_size += fmpz_bits(proof->D[i]);
+		proof_size += fmpz_bits(proof->s[i]);
+		proof_size += fmpz_bits(proof->y[i]);
+	}
+	proof_size += fmpz_bits(proof->gx);
+	proof_size += fmpz_bits(proof->r);
+
+	printf("proof size %d\n", proof_size);
+
+
 	FILE *fp;
 	int i = 0, flag = 1;
 	unsigned char *str;

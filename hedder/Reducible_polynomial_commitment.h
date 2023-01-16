@@ -7,3 +7,5 @@
 
 	#define _REDUCIBLE_POLYNOMIAL_COMMITMENT
 #endif
+
+

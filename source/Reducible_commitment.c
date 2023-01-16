@@ -174,7 +174,7 @@ int commit_precompute(_struct_commit_* cm, const _struct_pp_ pp, const _struct_p
 	fmpz_one(cm->C);
 
 	int num_threads = global_num_threads;//(int)omp_get_num_threads();
-	printf("num_threads %d\n", num_threads);
+	// printf("num_threads %d\n", num_threads);
 	fmpz_t* parallel_fmpz = (fmpz_t*)malloc(sizeof(fmpz_t) * num_threads);
 	fmpz_t* parallel_tmp = (fmpz_t*)malloc(sizeof(fmpz_t) * num_threads);
 
@@ -369,17 +369,17 @@ int open_precompute(_struct_open_* open, _struct_commit_* cm, const _struct_pp_*
 		free(parallel_tmp);
 	}
 
-	if(poly->d == 1)
-	{
-		printf("[0]%12llu\n", RunTime[0]);
-		printf("[1]%12llu\n", RunTime[1]);
-		printf("[2]%12llu\n", RunTime[2]);
-		printf("/////////////\n");
-		printf("[3]%12llu\n", RunTime[3]);
-		printf("[4]%12llu\n", RunTime[4]);
-		printf("[5]%12llu\n", RunTime[5]);
-		printf("[6]%12llu\n", RunTime[6]);
-	}
+	// if(poly->d == 1)
+	// {
+	// 	printf("[0]%12llu\n", RunTime[0]);
+	// 	printf("[1]%12llu\n", RunTime[1]);
+	// 	printf("[2]%12llu\n", RunTime[2]);
+	// 	printf("/////////////\n");
+	// 	printf("[3]%12llu\n", RunTime[3]);
+	// 	printf("[4]%12llu\n", RunTime[4]);
+	// 	printf("[5]%12llu\n", RunTime[5]);
+	// 	printf("[6]%12llu\n", RunTime[6]);
+	// }
 
 	fmpz_clear(bn_tmp1);
 	fmpz_clear(bn_tmp2);

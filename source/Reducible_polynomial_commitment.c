@@ -44,7 +44,7 @@ int Hprime_func(fmpz_t output, const fmpz_t* in, const int n, const fmpz_t in2)
 	mpz_init(w);
 	mpz_nextprime(w,u);	
 	fmpz_set_mpz(output, w);
-
+    // printf("l size: %d\n", fmpz_bits(output));
     //printf(">>"); fmpz_print(output); printf("\n");
 
 	mpz_clear(u);
@@ -126,8 +126,8 @@ int poly_commitment_setup(_struct_polynomial_pp_* pp, const int lamda, const int
         fmpz_add(poly->fz, poly->fz, fmpz_tmp);
         fmpz_mod(poly->fz, poly->fz, pp->p);
     }
-    printf("z "); fmpz_print(poly->z); printf("\n");
-    printf("fz "); fmpz_print(poly->fz); printf("\n");
+    // printf("z "); fmpz_print(poly->z); printf("\n");
+    // printf("fz "); fmpz_print(poly->fz); printf("\n");
 
     qbit = 128*(2*pp->n + 1)+1; // q 범위 수정함 + 정확히 어떤 값이 들어가길 원하는지 
     // bound 범위 수정
@@ -265,7 +265,7 @@ int OpenBound(fmpz_t* D, fmpz_t* y, _struct_poly_* gR[], fmpz_t gx, _struct_poly
             fmpz_mod(y[i], y[i], pp->p); //  mod p
         }// 여기까지의 gX가 g_i(X)
 
-        printf("y_%d: ", i); fmpz_print(y[i]); printf("\n");
+        // printf("y_%d: ", i); fmpz_print(y[i]); printf("\n");
         // d_i 계산 필요 
             // d_i <- R_i^g_(i, R)(q)
         multipoly_commit(D, pp, (*gR)[i], pp->q, i);
@@ -324,7 +324,7 @@ int multipoly_open(fmpz_t r, fmpz_t s[], fmpz_t Q, const fmpz_t l, const _struct
         open_precompute(&open, &cm, &pp_tmp, l, &(*g)[i], q, i);
         fmpz_set(s[i], open.r);
         fmpz_mod(s[i], s[i], l);
-        printf("s[%d]:\t", i); fmpz_print(s[i]); printf("\n");
+        // printf("s[%d]:\t", i); fmpz_print(s[i]); printf("\n");
         fmpz_mul(Q,Q,open.Q);
         fmpz_mod(Q,Q,pp_tmp.G);
     }
@@ -372,7 +372,7 @@ int Open(_struct_proof_ *proof, _struct_polynomial_pp_* pp, _struct_commit_* cm,
     
     
     Hprime_func(l_prime, proof->D, proof->n, cm->C);
-    printf("l "); fmpz_print(l_prime); printf("\n");
+    // printf("l "); fmpz_print(l_prime); printf("\n");
 
 
     //printf("multipoly_open\n");
@@ -381,7 +381,7 @@ int Open(_struct_proof_ *proof, _struct_polynomial_pp_* pp, _struct_commit_* cm,
     // f(z) 도 여기서 계산할 예정. 별도의 분리 필요? 
     multipoly_open(proof->r, proof->s, proof->Q, l_prime, pp, pp->q, &gR, poly);
 
-    printf("proof->Q "); fmpz_print(proof->Q); printf("\n");
+    // printf("proof->Q "); fmpz_print(proof->Q); printf("\n");
 
     // // PoKRep.ver 를 prover 안에서 확인용
     // // CD 계산 오류 수정
@@ -570,6 +570,7 @@ int PoKRep_Ver(fmpz_t r, fmpz_t Q, fmpz_t CD, fmpz_t* s, fmpz_t* R, const fmpz_t
     fmpz_init(G_prime);
     fmpz_init(G_1);
     fmpz_init(fmpz_tmp);
+    fmpz_init(fmpz_tmp2);
 
     fmpz_set(G_1, pp->cm_pp.g);
 
@@ -583,11 +584,19 @@ int PoKRep_Ver(fmpz_t r, fmpz_t Q, fmpz_t CD, fmpz_t* s, fmpz_t* R, const fmpz_t
 
     // R_i^s_i 곱셈합?
     for(int i=0; i<pp->n; i++){
-        fmpz_powm(fmpz_tmp2, R[i], s[i], pp->cm_pp.G);
-        fmpz_mul(G_prime, G_prime, fmpz_tmp2);
-        fmpz_mod(G_prime, G_prime, pp->cm_pp.G);
+        fmpz_t tmp1, tmp2;
+        fmpz_init(tmp1);
+        fmpz_init(tmp2);
+        fmpz_set(tmp1, R[i]);
+        fmpz_set(tmp2, s[i]);
+
         // printf("R_%d: ", i); fmpz_print(R[i]); printf("\n");
         // printf("s_%d: ", i); fmpz_print(s[i]); printf("\n");
+        // fmpz_powm(fmpz_tmp2, R[i], s[i], pp->cm_pp.G);
+        fmpz_powm(fmpz_tmp2, tmp1, tmp2, pp->cm_pp.G);
+        fmpz_mul(G_prime, G_prime, fmpz_tmp2);
+        fmpz_mod(G_prime, G_prime, pp->cm_pp.G);
+        
         // printf("R_%d^s_%d: ", i, i); fmpz_print(G_prime); printf("\n");
     }
 
@@ -595,10 +604,10 @@ int PoKRep_Ver(fmpz_t r, fmpz_t Q, fmpz_t CD, fmpz_t* s, fmpz_t* R, const fmpz_t
     fmpz_mul(G_prime, G_prime, fmpz_tmp);
     fmpz_mod(G_prime, G_prime, pp->cm_pp.G);
 
-    printf("proof->Q "); fmpz_print(Q); printf("\n");
+    // printf("proof->Q "); fmpz_print(Q); printf("\n");
 
-    printf("G=CD: "); fmpz_print(CD); printf("\n");
-    printf("G_prime: "); fmpz_print(G_prime); printf("\n");
+    // printf("G=CD: "); fmpz_print(CD); printf("\n");
+    // printf("G_prime: "); fmpz_print(G_prime); printf("\n");
 
     return fmpz_equal(CD, G_prime);
 }

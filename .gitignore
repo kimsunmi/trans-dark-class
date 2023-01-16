@@ -1,0 +1,12 @@
+.vscode
+
+nohup.out
+
+txt/*
+record/*
+
+*.dSYM
+TRANS*
+result*
+
+

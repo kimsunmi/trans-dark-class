@@ -31,7 +31,7 @@ int main(int argc, char *argv[])
     commit_clear(&cm);
     RunTime = TimerOff();
 	printf("Commit_PRE_ %12llu [us]\n", RunTime);
-    printf("pre "); fmpz_print(cm.C); printf("\n");
+    // printf("pre "); fmpz_print(cm.C); printf("\n");
 
 	TimerOn();
     commit_init(&cm);
@@ -39,7 +39,7 @@ int main(int argc, char *argv[])
     commit_clear(&cm);
     RunTime = TimerOff();
 	printf("Commit_NEW_ %12llu [us]\n", RunTime);
-    printf("ori "); fmpz_print(cm.C); printf("\n");
+    // printf("ori "); fmpz_print(cm.C); printf("\n");
 
 	TimerOn();
     Write_Commit("./Txt/commit.txt", &cm);

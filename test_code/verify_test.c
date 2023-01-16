@@ -29,9 +29,9 @@ int main(int argc, char *argv[])
     Read_proof(&proof);
     RunTime_IO = TimerOff();
 
-    printf("pp.cm_pp.security_level:\t"); printf("%d", pp.cm_pp.security_level); printf("\n");
-    printf("pp.n:\t"); printf("%d", pp.n); printf("\n");
-    printf("poly.d:\t"); printf("%d", poly.d); printf("\n");
+    // printf("pp.cm_pp.security_level:\t"); printf("%d", pp.cm_pp.security_level); printf("\n");
+    // printf("pp.n:\t"); printf("%d", pp.n); printf("\n");
+    // printf("poly.d:\t"); printf("%d", poly.d); printf("\n");
 
 
     TimerOn();

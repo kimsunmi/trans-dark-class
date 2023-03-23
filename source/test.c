@@ -43,11 +43,11 @@ int main(int argc, char *argv[])
 		LOG_D = 10;
 	printf("d_bit %d d-%d\r\n", LOG_D, (1<<(LOG_D)));
 
-	make_poly((1<<(LOG_D)));
+	make_poly(&poly,(1<<(LOG_D)));
     Read_poly(&poly);
 
 	TimerOn();
-    poly_commitment_setup(&pp, security_level, m, poly.d);
+    poly_commitment_setup(&pp, security_level, m, poly.d, &poly);
     RunTime = TimerOff();
 	printf("KeyGen_Time %12llu\r\n", RunTime);
 
@@ -111,7 +111,7 @@ int main(int argc, char *argv[])
     RunTime_IO = TimerOff();
 
     TimerOn();
-    flag = Verify(&proof2, &pp3, &cm2);
+    flag = Verify(&proof2, &pp3, &cm2,);
     RunTime = TimerOff();
     printf("Poly_Verify %12llu\r\n", RunTime);
     printf("Verify_I/O_ %12llu [%d]\r\n\n", RunTime_IO, flag);

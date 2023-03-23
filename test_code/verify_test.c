@@ -20,8 +20,6 @@ int main(int argc, char *argv[])
     fmpz_init(open.r);
     fmpz_init(open.Q);
 
-    //////////////////////////////////////////////////////////////////
-
 	TimerOn();
     Read_poly(&poly);
     Read_pp(&pp);
@@ -29,13 +27,8 @@ int main(int argc, char *argv[])
     Read_proof(&proof);
     RunTime_IO = TimerOff();
 
-    // printf("pp.cm_pp.security_level:\t"); printf("%d", pp.cm_pp.security_level); printf("\n");
-    // printf("pp.n:\t"); printf("%d", pp.n); printf("\n");
-    // printf("poly.d:\t"); printf("%d", poly.d); printf("\n");
-
-
     TimerOn();
-    flag = Verify(&proof, &pp, &cm, poly.z, poly.fz);
+    flag = Verify(&pp, &cm, poly.z, poly.fz, &proof);
     RunTime = TimerOff();
     printf("Poly_Verify %12llu [us]\n", RunTime);
     printf("Verify_I/O_ %12llu [us]\n", RunTime_IO);

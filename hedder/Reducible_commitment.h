@@ -12,42 +12,41 @@
 
 	typedef struct{
 		int security_level;
-		fmpz_t G; // rsa modulus?
-		fmpz_t g; // generator?
+		fmpz_t G; // Group (rsa modulus)
+		fmpz_t g; // generator
 	}_struct_pp_;
 
 	typedef struct{
-		fmpz_t C;
+		fmpz_t C; // commitment
 	}_struct_commit_;
 
 	typedef struct{
-		fmpz_t r;
-		fmpz_t Q;
+		fmpz_t r; // pokRep_open r
+		fmpz_t Q; // pokRep_Open Q
 	}_struct_open_;
 
 	typedef struct{
-		fmpz_t* Fx;
-		fmpz_t z;
-		fmpz_t fz;
-		int d;
+		fmpz_t* Fx; // polynomial coefficient
+		fmpz_t z; // random Z
+		fmpz_t fz; // F[z]
+		int d; // degree
 	}_struct_poly_;
 
 	typedef struct{
 		_struct_pp_ cm_pp;
-		fmpz_t* R;
-		int n;
-		fmpz_t b;
-		fmpz_t p;
-		fmpz_t q;
-		int d;
+		fmpz_t* R; // R_vector
+		int n; // mu
+		fmpz_t b; // bound
+		fmpz_t p; // prime (generating G)
+		fmpz_t q; // prime (generating G)
+		int d; // polynomial degree
 	}_struct_polynomial_pp_;
 
 	typedef struct{
 		fmpz_t Q; // pf size
-		// D 계산 값이 벡터로 나와야 함 
-		// D length == n 
+		// D length == n
 		fmpz_t* D; // pf size
-		int n; 
+		int n; // mu
 		fmpz_t* s; // pf size
 		fmpz_t* y; // pf size
 		fmpz_t gx; // pf size
@@ -68,8 +67,6 @@
     int open_new(_struct_open_* open, _struct_commit_* cm, const _struct_pp_* pp, const fmpz_t l, const _struct_poly_* poly, const fmpz_t q);    
     int open_precompute(_struct_open_* open, _struct_commit_* cm, const _struct_pp_* pp, const fmpz_t l, const _struct_poly_* poly, const fmpz_t q, int index);
     int open_clear(_struct_open_* open);
-
-    //int Ver(const _struct_open_ open, const _struct_commit_ cm, const _struct_pp_ pp, const BIGNUM* l);
 
 	#define _REDUCIBLE_COMMITMENT
 #endif

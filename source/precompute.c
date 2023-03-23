@@ -75,7 +75,7 @@ int main(int argc, char *argv[])
 	fmpz_setbit(q, qbit); //qbit
 
     fmpz_one(fmpz_tmp_1);
-    #pragma omp parallel for
+    // #pragma omp parallel for
     for(int i = 0; i <= n; i++){
         fmpz_init(fmpz_GR[i]);
         
@@ -86,7 +86,7 @@ int main(int argc, char *argv[])
 
     printf("NEW!!\r\n");
     fmpz_mod(phi_q, q, phi_G);    
-    #pragma omp parallel for
+    // #pragma omp parallel for
     for(int i = 0; i<= n; i++)
     {
         FILE *fp;

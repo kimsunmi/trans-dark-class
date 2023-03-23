@@ -22,8 +22,11 @@ int KeyGen_RSAsetup( _struct_pp_ *pp, const int lamda )
 		BN_generate_prime_ex(p,(lamda>>1),0,NULL,NULL,NULL);
 		BN_generate_prime_ex(q,(lamda>>1),0,NULL,NULL,NULL);
 		BN_mul(tmp,p,q, ctx);
+		// G = lamda size prime*prime
 		fmpz_set_str(pp->G, BN_bn2hex(tmp), 16);
 	}while(BN_num_bits(tmp) != lamda);
+
+	// g = lamda/2 size random prime 
 	BN_generate_prime_ex(tmp,lamda >> 1,0,NULL,NULL,NULL);
 	fmpz_set_str(pp->g, BN_bn2hex(tmp), 16);
 
@@ -49,8 +52,11 @@ int pp_clear(_struct_pp_* pp)
 	fmpz_clear(pp->g);
 
 	return 1;
-}
+} 
 
+// make precomputation table (0,0)...(0,2^10)
+//                           ...
+//                           (n,0)...(n,2^10)
 int start_precomputation(_struct_polynomial_pp_* pp, const _struct_poly_ poly)
 {
 	int i, j;
@@ -59,6 +65,7 @@ int start_precomputation(_struct_polynomial_pp_* pp, const _struct_poly_ poly)
 		FILE *fp;
 		int isfile_exist = 1;
 		unsigned long long int RunTime1=0;
+		unsigned long long int RunTime2=0;
 		int logD = ceil(log(poly.d)/log(2));
 		TimerOff();
 		printf("Start precomputation\n");
@@ -76,7 +83,7 @@ int start_precomputation(_struct_polynomial_pp_* pp, const _struct_poly_ poly)
 					sprintf(str1, "precom/%d/G%d.txt", 1<<logD, i);
 					if(access(str1, F_OK) < 0 || access(str1, R_OK) < 0){
 						isfile_exist = 0;
-						break;	
+						break;
 					}
 				}
 			}
@@ -86,11 +93,11 @@ int start_precomputation(_struct_polynomial_pp_* pp, const _struct_poly_ poly)
 			isfile_exist = 0;
 
 		precompute_num = (isfile_exist == 1) ? (1<<logD) : (poly.d);
-		pre_table = (fmpz_t**)calloc(sizeof(fmpz_t*), pp->n + 1);
+		pre_table = (fmpz_t**)calloc(pp->n + 1, sizeof(fmpz_t*));
 		for(i = 0; i < pp->n + 1; i++)
-			pre_table[i] = (fmpz_t*)calloc(sizeof(fmpz_t), precompute_num);
+			pre_table[i] = (fmpz_t*)calloc(precompute_num, sizeof(fmpz_t));
 
-
+		// if file exist, read polynomial.
 		if(isfile_exist == 1)
 		{
 			printf("Read precompute data\n");
@@ -127,15 +134,17 @@ int start_precomputation(_struct_polynomial_pp_* pp, const _struct_poly_ poly)
 		}
 		else
 		{
-			
+			// set precomputation table with generator and pp->R. [0][0] ~ [i][0]
 			fmpz_init_set(pre_table[0][0], pp->cm_pp.g);
 			for(int i=1; i<= pp->n; i++){
 				fmpz_init_set(pre_table[i][0], pp->R[i-1]);		
 			
 			}
-			
-			//#pragma omp parallel for
-			for(int i=0; i<= pp->n; i++)
+			TimerOff();
+			TimerOn();
+			// compute precomputation table [1][1] ~ [n][2^(D-1)-1] that R[0]^1,R[0]^q,...,R[0]^{q^(2^precomute_num-1)} mod G
+			// #pragma omp parallel for
+			for(int i=1; i<= pp->n; i++)
 			{	
 				for(int j = 1; j < precompute_num/2; j++)
 				{
@@ -143,19 +152,24 @@ int start_precomputation(_struct_polynomial_pp_* pp, const _struct_poly_ poly)
 					fmpz_powm(pre_table[i][j], pre_table[i][j-1], pp->q, pp->cm_pp.G);
 				}
 			}
-			
-			for(j = precompute_num/2; j < precompute_num; j++)
+			RunTime1 = TimerOff();
+			TimerOn();
+			// [0][1] ~ [0][D] = q^1 ~ q^D 
+			for(j = 1; j < precompute_num; j++)
 			{
 				fmpz_init(pre_table[0][j]);
 				fmpz_powm(pre_table[0][j], pre_table[0][j-1], pp->q, pp->cm_pp.G);
 			}
+			RunTime2 = TimerOff();
 		}
 
 
-		RunTime1 = TimerOff();
-		printf("PRE_COMPUTE %12llu [us]\n", RunTime1);
+		RunTime1 += RunTime2;
+		printf("PRE_COMPUTE_(r_i + g) %12llu [us]\n", RunTime1);
+		printf("PRE_COMPUTE_g %12llu [us]\n", RunTime2);
 		fp = fopen("record/precompute.txt", "a+");
-		fprintf(fp, "%d %d %llu\n", pp->cm_pp.security_level, poly.d, RunTime1);			
+		fprintf(fp, "%d %d %llu precompute only g\n", pp->cm_pp.security_level, poly.d, RunTime2);			
+		fprintf(fp, "%d %d %llu precompute all\n", pp->cm_pp.security_level, poly.d, RunTime1);			
 		fclose(fp);
 		TimerOn();
 	}
@@ -164,6 +178,7 @@ int start_precomputation(_struct_polynomial_pp_* pp, const _struct_poly_ poly)
 	return isprecomputed;
 }
 
+// compute Commitment = G^f(q,q^2,...)
 int commit_precompute(_struct_commit_* cm, const _struct_pp_ pp, const _struct_poly_ poly, const fmpz_t q, int index)
 {
 	static int isfirst = 1;
@@ -173,18 +188,19 @@ int commit_precompute(_struct_commit_* cm, const _struct_pp_ pp, const _struct_p
 	fmpz_init(fmpz_tmp);
 	fmpz_one(cm->C);
 
-	int num_threads = global_num_threads;//(int)omp_get_num_threads();
-	// printf("num_threads %d\n", num_threads);
+	int num_threads = 1;
 	fmpz_t* parallel_fmpz = (fmpz_t*)malloc(sizeof(fmpz_t) * num_threads);
 	fmpz_t* parallel_tmp = (fmpz_t*)malloc(sizeof(fmpz_t) * num_threads);
 
 	if(isprecomputed){	
-		#pragma omp parallel for
+		// #pragma omp parallel for
 		for(int j=0; j<num_threads; j++)
 		{
-			fmpz_init_set_ui(parallel_fmpz[j],1);
-			fmpz_init(parallel_tmp[j]);
+			fmpz_init_set_ui(parallel_fmpz[j],1); // set one
+			fmpz_init(parallel_tmp[j]); // set zero
 			
+			// [{pre_table[0][0]^Fx[0] (mod G)}*...*{pre_table[0][d]^Fx[d] (mod G)}](mod G)
+			// product g_i^Fx_i from i = 1 to d 
 			for(int i = (j*poly.d)/num_threads; i < ((1+j)*poly.d)/num_threads; i++)
 			{
 				fmpz_powm(parallel_tmp[j], pre_table[index+1][i], poly.Fx[i], pp.G);
@@ -194,6 +210,7 @@ int commit_precompute(_struct_commit_* cm, const _struct_pp_ pp, const _struct_p
 			fmpz_clear(fmpz_tmp);
 		}
 
+		// set Commitment (mod G)
 		for(int j=0; j<num_threads; j++)
 		{
 			fmpz_mul(cm->C, cm->C, parallel_fmpz[j]);
@@ -255,7 +272,7 @@ int commit_clear(_struct_commit_* cm){
 	return 1;
 }
 
-
+// 
 int open_precompute(_struct_open_* open, _struct_commit_* cm, const _struct_pp_* pp, const fmpz_t l, const _struct_poly_* poly, const fmpz_t q, int index)
 {
 	int numbits = fmpz_bits(q)-1;	
@@ -277,17 +294,18 @@ int open_precompute(_struct_open_* open, _struct_commit_* cm, const _struct_pp_*
 	TimerOn2(before);
 	fmpz_zero(open->r);
 
-	// f(q) 연산, g_(i, r)(q)계산 
+	// f(q) 연산
 	for(i = poly->d-1; i >= 0; i--)
 	{
-		fmpz_mul_2exp(open->r, open->r, numbits);
+		fmpz_mul_2exp(open->r, open->r, numbits); // r*2^numbits
 		fmpz_add(open->r, open->r, poly->Fx[i]);
-		// fmpz_mod(open->r, open->r, l);
 	}
 	RunTime[0] += TimerOff2(before, after);
 
 	TimerOn2(before+1);
 	fmpz_zero(bn_tmp1);
+
+	// g_(i, r)(q)계산 
 	for(i = poly->d-1; i >= 0; i--)
 	{
 		for(int j = 0; j < fmpz_bits(poly->Fx[i]); j++)
@@ -304,12 +322,8 @@ int open_precompute(_struct_open_* open, _struct_commit_* cm, const _struct_pp_*
 	// f(q) / 1 - 몫: bn_dv, 나머지: bn_rem
 	fmpz_tdiv_qr(bn_dv, bn_rem, bn_tmp1, l);
 	fmpz_set(open->r, bn_rem);
-	
-	// printf("bn_dv[%d] :\t", index); fmpz_print(bn_dv); printf("\n");
-	// printf("bn_rem[%d] :\t", index); fmpz_print(bn_rem); printf("\n");
 
-
-	int num_threads = global_num_threads;//(int)omp_get_num_threads();
+	int num_threads = 1; //global_num_threads;//(int)omp_get_num_threads();
 	RunTime[2] += TimerOff2(before+2, after+2);
 
 	if(num_threads == 1)
@@ -331,13 +345,13 @@ int open_precompute(_struct_open_* open, _struct_commit_* cm, const _struct_pp_*
 
 		_struct_poly_ f_out;
 		f_out.d = poly->d;	
-		f_out.Fx = (fmpz_t*)calloc(sizeof(fmpz_t), f_out.d);
+		f_out.Fx = (fmpz_t*)calloc(f_out.d, sizeof(fmpz_t));
 
 		RunTime[3] += TimerOff2(before+3, after+3);	
 		while(offset* numbits < dv_bits)
 		{
 			TimerOn2(before+4);
-			#pragma omp parallel for
+			// #pragma omp parallel for
 			for(int i=0; i < num_threads; i++)
 			{	
 				fmpz_zero(parallel_tmp[i]);

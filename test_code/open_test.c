@@ -28,13 +28,14 @@ int main(int argc, char *argv[])
     Read_poly(&poly);
     RunTime_IO = TimerOff();
 
+    // read precomputation table
     start_precomputation(&pp, poly);
 
     TimerOn();
-    // z 추가 필요 
-    Open(&proof, &pp, &cm, &poly);
-    RunTime = TimerOff();
-	printf("__Poly_Open %12llu [us]\n", RunTime);
+    
+    unsigned long long OPEN_RUNTIME = Open(&proof, &pp, &cm, &poly);
+
+	printf("__Poly_Open %12llu [us]\n", OPEN_RUNTIME);
 
     TimerOn();
     Write_proof(&proof);

@@ -1,5 +1,5 @@
-# CC=gcc-12
-CC=clang
+CC=gcc
+# CC=clang
 CFLAGS := -g -lm -lcrypto -lgmp -lflint -fopenmp -lpthread -fsanitize=address
 
 SOURCE_DIR = ./source/

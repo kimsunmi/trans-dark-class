@@ -8,7 +8,7 @@ int Read_pp(_struct_polynomial_pp_* pp)
 	int i = 0, flag = 1;
 	unsigned char *str;//[100000] = {0};
 
-	str = (unsigned char *)calloc(sizeof(unsigned char),1000);  
+	str = (unsigned char *)calloc(1000, sizeof(unsigned char));  
 	fp = fopen("./Txt/pp.txt", "r");
 	fscanf(fp, "%x", &(pp->cm_pp.security_level));
 
@@ -80,19 +80,20 @@ int Write_pp(const _struct_polynomial_pp_* pp)
     fclose(fp);
 }
 
+//
 int Read_poly(_struct_poly_* poly)
 {
 	FILE *fp;
 	int i = 0, flag = 1;
 	unsigned char *str;
-	str = (unsigned char *)calloc(sizeof(unsigned char),1000);    
+	str = (unsigned char *)calloc(1000, sizeof(unsigned char));    
 
 	fp = fopen("./Txt/poly.txt", "r");
 	
 	fscanf(fp, "%s", str);
 	poly->d = atoi(str);
 
-	poly->Fx = (fmpz_t*)calloc(sizeof(fmpz_t), poly->d);
+	poly->Fx = (fmpz_t*)calloc(poly->d, sizeof(fmpz_t));
 	for(i=0; i<poly->d; i++)
 	{			
 		fmpz_init(poly->Fx[poly->d-i-1]);			     
@@ -199,7 +200,7 @@ int Read_proof(_struct_proof_ *proof)
 	unsigned char *buffer;// [10000]={0};
 	int i = 0, flag = 1, cnt;
 
-	buffer = (unsigned char *)calloc(sizeof(unsigned char),(1000));    
+	buffer = (unsigned char *)calloc(1000, sizeof(unsigned char));    
 
 	fmpz_init(proof->Q);
 	// fmpz_init(proof->D);
@@ -249,23 +250,25 @@ int Read_proof(_struct_proof_ *proof)
 	return (flag > 0 ? 1 : 0);	
 }
 
+// make Fx[d-1..0]
 int make_poly(_struct_poly_* poly, int d)
 {
-	// poly의 랜덤이... 랜덤은 함... 근데 고정된... 
+	// poly random
 	flint_rand_t state;
 	int i = 0, flag = 1;
 
 	flint_randinit(state);
 
+	// d = 2^10
 	poly->d = d;
+	poly->Fx = (fmpz_t*)calloc(d, sizeof(fmpz_t));
 
-	poly->Fx = (fmpz_t*)calloc(sizeof(fmpz_t), d);
-
+	// Fx[d-1..0] 32bit init
 	for(int i = 0; i < d; i++)
 	{
 		fmpz_init(poly->Fx[d-i-1]);
-		//fmpz_set_ui(bn_tmp, 1+i); // 1+i // random 
-		fmpz_randtest_unsigned(poly->Fx[d-i-1], state, 32); // 계수 비트 왜 32비트지?
+		fmpz_randbits(poly->Fx[d-i-1], state, 32);
+		fmpz_abs(poly->Fx[d-i-1], poly->Fx[d-i-1]);
 	}
 
 	return flag;

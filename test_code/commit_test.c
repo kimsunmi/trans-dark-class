@@ -46,5 +46,15 @@ int main(int argc, char *argv[])
     RunTime_IO += TimerOff();
 	printf("Commit_I/O_ %12llu [us]\n", RunTime_IO);
 
+    for(int i=0; i<poly.d; i++)
+	{			
+		fmpz_clear(poly.Fx[poly.d-i-1]);
+	}
+    for(int i=0; i<pp.n; i++)
+	{
+		fmpz_clear(pp.R[i]);
+	}
+    free(poly.Fx);
+    free(pp.R);
 	return 0;
 }

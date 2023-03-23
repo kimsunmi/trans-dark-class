@@ -30,6 +30,7 @@ int main(int argc, char *argv[])
     TimerOn();
     flag = Verify(&pp, &cm, poly.z, poly.fz, &proof);
     RunTime = TimerOff();
+
     printf("Poly_Verify %12llu [us]\n", RunTime);
     printf("Verify_I/O_ %12llu [us]\n", RunTime_IO);
     printf("Verify Result [%d]\n", flag);
@@ -38,5 +39,18 @@ int main(int argc, char *argv[])
 	getfilesize("Txt/commit.txt");
 	getfilesize("Txt/proof.txt");
 
+    for(int i=0; i<poly.d; i++)
+		fmpz_clear(poly.Fx[poly.d-i-1]);
+    for(int i =0; i < proof.n; i++) {
+        fmpz_clear(proof.s[i]);
+        fmpz_clear(proof.y[i]);
+        fmpz_clear(proof.D[i]);
+        fmpz_clear(pp.R[i]);
+    }
+    free(poly.Fx);
+    free(proof.s);
+    free(proof.y);
+    free(proof.D);
+    free(pp.R);
 	return 0;
 }

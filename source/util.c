@@ -107,8 +107,6 @@ int Read_poly(_struct_poly_* poly)
 	fscanf(fp, "%s", str);
 	fmpz_set_str(poly->fz, str, 16);
 
-	
-
 	fclose(fp);
 	free(str);
 	return flag;

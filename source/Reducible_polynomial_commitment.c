@@ -149,7 +149,6 @@ int pokRep_setup(_struct_polynomial_pp_* pp, const int lamda, const int m, const
     BN_CTX_free(ctx);
     BN_free(bn_tmp);
     fmpz_clear(fmpz_tmp);
-    
     return flag;
 }
 
@@ -463,7 +462,7 @@ int Open(_struct_proof_ *proof, _struct_polynomial_pp_* pp, _struct_commit_* cm,
     fmpz_clear(fmpz_tmp1);
     fmpz_clear(fmpz_tmp2);
     fmpz_clear(alphaI);
-    
+
     for(i=0; i<gX.d; i++)
         fmpz_clear(gX.Fx[i]);
     for(i=0; i<gL.d; i++)

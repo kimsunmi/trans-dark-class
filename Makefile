@@ -1,7 +1,6 @@
 CC=gcc
 # CC=clang
-CFLAGS := -g -lm -lcrypto -lgmp -lflint -fopenmp -lpthread 
-#-fsanitize=address
+CFLAGS := -g -lm -lcrypto -lgmp -lflint -fopenmp -lpthread -fsanitize=address
 
 SOURCE_DIR = ./source/
 TEST_CODE_DIR = ./test_code/

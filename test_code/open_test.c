@@ -47,5 +47,18 @@ int main(int argc, char *argv[])
 	fprintf(fp, "%d %d %llu %llu\n", pp.cm_pp.security_level, poly.d, RunTime_IO, RunTime);			
 	fclose(fp);
 
+    for(int i=0; i<poly.d; i++)
+		fmpz_clear(poly.Fx[poly.d-i-1]);
+    for(int i =0; i < pp.n; i++) {
+        fmpz_clear(proof.s[i]);
+        fmpz_clear(proof.y[i]);
+        fmpz_clear(proof.D[i]);
+        fmpz_clear(pp.R[i]);
+    }
+    free(poly.Fx);
+    free(proof.s);
+    free(proof.y);
+    free(proof.D);
+    free(pp.R);
 	return 0;
 }

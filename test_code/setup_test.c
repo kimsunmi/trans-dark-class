@@ -36,13 +36,23 @@ int main(int argc, char *argv[])
 
 	TimerOn(); 
     Write_pp(&pp);
+
     RunTime_IO = TimerOff();
 	printf("KeyGen_I/O_ %12llu [us]\n", RunTime_IO);
+	
+	for(int i=0; i < D; i++){
+		fmpz_clear(poly.Fx[D-i-1]);
+	}
+
+    for(int i = 0; i < pp.n; i++){
+        fmpz_clear(pp.R[i]);
+    }
+	free(poly.Fx);
+	free(pp.R);
 
 	FILE *fp;
 	fp = fopen("record/setup.txt", "a+");
 	fprintf(fp, "%d %d %llu %llu\n", pp.cm_pp.security_level, poly.d, RunTime_IO, RunTime);			
 	fclose(fp);
-
 	return 0;
 }

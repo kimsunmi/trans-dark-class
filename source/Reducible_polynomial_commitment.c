@@ -339,33 +339,118 @@ int Open(_struct_proof_ *proof, _struct_polynomial_pp_* pp, _struct_commit_* cm,
     fmpz_t CD;
     fmpz_t l_prime;
     fmpz_t fmpz_tmp;
+    fmpz_t fmpz_tmp1, fmpz_tmp2;
+    fmpz_t alphaI; // alpha_i
 
+    int i, j, d;
+    int n = pp->n, qbit = fmpz_bits(pp->q) - 1; 
+
+    static _struct_poly_ gL, gX; // gX: g_1(X)
     _struct_poly_* gR = NULL;
+
     fmpz_one(CD);
     fmpz_init(l_prime);
     fmpz_init(fmpz_tmp);
     fmpz_init(proof->gx);
     fmpz_init(proof->r);
     fmpz_init(proof->Q);
-    
+    fmpz_init(fmpz_tmp1);
+    fmpz_init(fmpz_tmp2);
+    fmpz_init(alphaI);
+
     proof->s = (fmpz_t*)calloc(pp->n, sizeof(fmpz_t));
     proof->D = (fmpz_t*)calloc(pp->n, sizeof(fmpz_t));
     proof->y = (fmpz_t*)calloc(pp->n, sizeof(fmpz_t));
     proof->n = pp->n;
 
-    // open bound 꺼내오기(논문에 존재X). 
-    OpenBound(proof->D, proof->y, &gR, proof->gx, pp, cm, poly, pRuntime);    
-    //
+    // OpenBound(proof->D, proof->y, &gR, proof->gx, pp, cm, poly, pRuntime);
+    // open bound start
 
+    // D벡터 메모리 할당, 벡터 길이: n 
+    for(i = 0; i < n; i++) fmpz_init(proof->D[i]);
 
+    // y 벡터 메모리 할당, 벡터 길이: n 
+    for(i = 0; i < n; i++) fmpz_init(proof->y[i]);
 
+    TimerOn();
 
+    // g_i(X) (여기서 i = 1) 계산 
+    gX.d = poly->d + 1;
+    (*pRuntime) += TimerOff();
 
+    gX.Fx = (fmpz_t*)calloc(gX.d, sizeof(fmpz_t));
+    for(i = 0; i < gX.d; i++)
+        fmpz_init(gX.Fx[i]);
+    // initialize g
+    for(i = 0; i < poly->d; i++)
+        fmpz_set(gX.Fx[i], poly->Fx[i]);
 
+    TimerOn();
+    gL.d = (poly->d+1)/2;
+    (*pRuntime) += TimerOff();
+    
+    gL.Fx = (fmpz_t*)calloc(gL.d, sizeof(fmpz_t));
+    for(i=0; i<gL.d; i++)
+        fmpz_init(gL.Fx[i]);
+    
+    // g_1, g_(1, R), ... ,g_(n, R) 까지 다항식 저장할 공간 생성
+    gR = (_struct_poly_*)calloc(n, sizeof(_struct_poly_));
 
+    TimerOn();
+    d = poly->d;
 
+    // g_1(X)를 절반씩 자르기 시작 
+    // g_(1, L)(X) = g_1[:(d+1)/2]
+    // n번 반복, 절반씩 자르기 
+    for( i = 0; i < n; i++ ){
 
-    //
+        // 다항식 차수가 홀수인 경우, +1 해놓고 최고차항 계수 0으로 설정
+        if(d%2 != 0){
+            d++;
+            fmpz_zero(gX.Fx[d-1]);
+        }
+
+        // 다항식 차수 절반으로 줄여 gL과 gR로 분할
+        d /= 2;
+
+        // g_(i, R)다항식 저장 공간 할당 
+        gR[i].Fx = (fmpz_t*)calloc(d, sizeof(fmpz_t));
+        gR[i].d = d;
+
+        // 베타 랜덤으로 설정 -> 알파로 변경 (논문 PC.Open 7번 참고)
+        get_alpha_SHA256(alphaI, cm->C, i);
+        fmpz_mod(alphaI, alphaI, pp->p); // alpha_i <- alpha_i mod p 
+
+        for(j=0; j<d; j++){            
+            fmpz_init(gR[i].Fx[j]);
+ 
+            fmpz_set(gL.Fx[j], gX.Fx[j]); // g_(i, L): g_i 왼쪽 부분 자르기
+            fmpz_set(gR[i].Fx[j], gX.Fx[d + j]); // g_(i, R): g_i 나머지 부분 자르기 
+
+            fmpz_mul(fmpz_tmp2, alphaI, gR[i].Fx[j]); // alphaI * g_{i,R}
+
+            fmpz_add(gX.Fx[j], gL.Fx[j], fmpz_tmp2); // g_(i+1) <- g_(i, L) + alpha_i * g_(i, R)
+            
+            // y[i] += g_(i, R)[j]*z^j
+            fmpz_powm_ui(fmpz_tmp1, poly->z, j, pp->p); // z^j mod p
+            fmpz_mul(fmpz_tmp1, fmpz_tmp1, gR[i].Fx[j]); // g_(i,r)[j]*z^j
+            fmpz_mod(fmpz_tmp1, fmpz_tmp1, pp->p); // g_(i,r)[j]*z^j mod p
+            
+            fmpz_add(proof->y[i], proof->y[i], fmpz_tmp1); // y[i] += g_(i,r)[j]*z^j
+            fmpz_mod(proof->y[i], proof->y[i], pp->p); //  mod p
+        }// 여기까지의 gX가 g_i(X)
+
+        // d_i <- R_i^g_(i, R)(q)
+        multipoly_commit(proof->D, pp, gR[i], pp->q, i);
+        
+    } // 여기까지 반복 완료하면 gR: g_1, g_(1, R), g_(2, R), ..., g_(n, R) 까지 저장한 다항식 배열
+
+    (*pRuntime) += TimerOff();
+    
+    // 최종 상수항
+    fmpz_set(proof->gx, gX.Fx[0]);
+    // openbound end
+
     TimerOn();
     
     Hprime_func(l_prime, proof->D, proof->n, cm->C);
@@ -374,6 +459,18 @@ int Open(_struct_proof_ *proof, _struct_polynomial_pp_* pp, _struct_commit_* cm,
     pokRep_open(proof->r, proof->s, proof->Q, l_prime, pp, pp->q, &gR, poly);
 
     OPEN_RUNTIME += TimerOff();
+
+    fmpz_clear(fmpz_tmp1);
+    fmpz_clear(fmpz_tmp2);
+    fmpz_clear(alphaI);
+    
+    for(i=0; i<gX.d; i++)
+        fmpz_clear(gX.Fx[i]);
+    for(i=0; i<gL.d; i++)
+        fmpz_clear(gL.Fx[i]);
+
+    free(gX.Fx);
+    free(gL.Fx);
 
     BN_CTX_free(ctx);
     fmpz_clear(l_prime);

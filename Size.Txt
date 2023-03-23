@@ -2336,3 +2336,6 @@ Txt/proof.txt 22
 Txt/pp.txt 847
 Txt/commit.txt 512
 Txt/proof.txt 22
+Txt/pp.txt 175
+Txt/commit.txt 65
+Txt/proof.txt 22

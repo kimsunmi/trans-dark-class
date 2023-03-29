@@ -1,4 +1,4 @@
-#ifndef _REDUCIBLE_COMMITMENT   
+#ifndef _POLYNOMIAL_COMMIT
 	#include <stdio.h>
 	#include <string.h>
 	#include <sys/time.h>
@@ -52,11 +52,6 @@
 		fmpz_t gx; // pf size
 		fmpz_t r; // pf size
 	}_struct_proof_;
-	
-
-    int KeyGen_RSAsetup( _struct_pp_ *pp, const int lamda );
-    int pp_init(_struct_pp_* pp);
-    int pp_clear(_struct_pp_* pp);
 
     int start_precomputation(_struct_polynomial_pp_* pp, const _struct_poly_ poly);
     int commit_new(_struct_commit_* cm, const _struct_pp_ pp, const _struct_poly_ poly, const fmpz_t q);        
@@ -64,9 +59,7 @@
     int commit_init(_struct_commit_* cm);
     int commit_clear(_struct_commit_* cm);
 
-    int open_new(_struct_open_* open, _struct_commit_* cm, const _struct_pp_* pp, const fmpz_t l, const _struct_poly_* poly, const fmpz_t q);    
-    int open_precompute(_struct_open_* open, _struct_commit_* cm, const _struct_pp_* pp, const fmpz_t l, const _struct_poly_* poly, const fmpz_t q, int index);
-    int open_clear(_struct_open_* open);
+    int pokRep_open_precom(_struct_open_* open, _struct_commit_* cm, const _struct_pp_* pp, const fmpz_t l, const _struct_poly_* poly, const fmpz_t q, int index);
 
-	#define _REDUCIBLE_COMMITMENT
+	#define _POLYNOMIAL_COMMIT
 #endif

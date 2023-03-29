@@ -1,13 +1,12 @@
-#include "../hedder/Reducible_commitment.h"
-#include "../hedder/Reducible_polynomial_commitment.h"
+#include "../hedder/polynomial_commit.h"
+#include "../hedder/polynomial_open_verify.h"
 #include "../hedder/util.h"
 int global_num_threads = 1;
 
 int main(int argc, char *argv[])
 {
     int m  = 1; // polynomial batch = 1
-    int LOG_D; // degree
-	int D =  (1<<(LOG_D)); // 2^degree
+    int LOG_D,D; // degree
 	int security_level = 2048; // lamda
 	unsigned long long int RunTime = 0, RunTime_IO = 0;
     
@@ -23,10 +22,12 @@ int main(int argc, char *argv[])
 	else
 		LOG_D = 10;
 
+	D =  (1<<(LOG_D)); // 2^degree
 	make_poly(&poly, D);
 
 	TimerOn();
 
+	// setup G(group), generater g vector number of polynomials Fx
     pokRep_setup(&pp, security_level, m, D, &poly);
 	printf("d_bit %d d-%d q-%d\n", LOG_D, D, (int)fmpz_bits(pp.q)-1);
     RunTime = TimerOff();
@@ -47,6 +48,7 @@ int main(int argc, char *argv[])
     for(int i = 0; i < pp.n; i++){
         fmpz_clear(pp.R[i]);
     }
+
 	free(poly.Fx);
 	free(pp.R);
 
@@ -54,5 +56,6 @@ int main(int argc, char *argv[])
 	fp = fopen("record/setup.txt", "a+");
 	fprintf(fp, "%d %d %llu %llu\n", pp.cm_pp.security_level, poly.d, RunTime_IO, RunTime);			
 	fclose(fp);
+	
 	return 0;
 }

@@ -1,8 +1,9 @@
-#include "../hedder/Reducible_commitment.h"
-#include "../hedder/Reducible_polynomial_commitment.h"
+#include "../hedder/polynomial_commit.h"
+#include "../hedder/polynomial_open_verify.h"
 #include "../hedder/util.h"
 int global_num_threads = 1;
 
+// Verify: verify with poly, pp, commit, proof
 int main(int argc, char *argv[])
 {
 	unsigned long long int RunTime = 0, RunTime_IO = 0;

@@ -1,5 +1,5 @@
-#include "../hedder/Reducible_commitment.h"
-#include "../hedder/Reducible_polynomial_commitment.h"
+#include "../hedder/polynomial_commit.h"
+#include "../hedder/polynomial_open_verify.h"
 #include "../hedder/util.h"
 #include <unistd.h>
 #include <omp.h>
@@ -10,49 +10,6 @@ static int precompute_num = 0, isprecomputed = 0;
 
 struct timeval before[10]={0}, after[10] = {0};
 unsigned long long int RunTime[10] = {0};
-
-int KeyGen_RSAsetup( _struct_pp_ *pp, const int lamda )
-{
-	BIGNUM* p = BN_new();
-	BIGNUM* q = BN_new();
-	BIGNUM* tmp = BN_new();
-	BN_CTX* ctx = BN_CTX_new();
-
-	do{
-		BN_generate_prime_ex(p,(lamda>>1),0,NULL,NULL,NULL);
-		BN_generate_prime_ex(q,(lamda>>1),0,NULL,NULL,NULL);
-		BN_mul(tmp,p,q, ctx);
-		// G = lamda size prime*prime
-		fmpz_set_str(pp->G, BN_bn2hex(tmp), 16);
-	}while(BN_num_bits(tmp) != lamda);
-
-	// g = lamda/2 size random prime 
-	BN_generate_prime_ex(tmp,lamda >> 1,0,NULL,NULL,NULL);
-	fmpz_set_str(pp->g, BN_bn2hex(tmp), 16);
-
-	BN_free(p);
-	BN_free(q);
-	BN_free(tmp);
-	BN_CTX_free(ctx);
-
-	return 1;
-}
-
-int pp_init(_struct_pp_* pp)
-{
-	fmpz_init(pp->G);
-	fmpz_init(pp->g);
-
-	return 1;
-}
-
-int pp_clear(_struct_pp_* pp)
-{
-	fmpz_clear(pp->G);
-	fmpz_clear(pp->g);
-
-	return 1;
-} 
 
 // make precomputation table (0,0)...(0,2^10)
 //                           ...
@@ -115,7 +72,6 @@ int start_precomputation(_struct_polynomial_pp_* pp, const _struct_poly_ poly)
 				char str3[100] = {0}, str2[3050] = {0};
 				sprintf(str3, "precom/%d/G%d.txt", precompute_num, i);
 				//printf("%s %d %d\r\n", str3, logD, i);
-
 				fp1 = fopen(str3, "r");
 				for(int j = 0; j < (i==0 ? precompute_num : precompute_num/2); j++)
 				{
@@ -192,7 +148,7 @@ int commit_precompute(_struct_commit_* cm, const _struct_pp_ pp, const _struct_p
 	fmpz_t* parallel_fmpz = (fmpz_t*)malloc(sizeof(fmpz_t) * num_threads);
 	fmpz_t* parallel_tmp = (fmpz_t*)malloc(sizeof(fmpz_t) * num_threads);
 
-	if(isprecomputed){	
+	if(isprecomputed){
 		// #pragma omp parallel for
 		for(int j=0; j<num_threads; j++)
 		{
@@ -272,8 +228,8 @@ int commit_clear(_struct_commit_* cm){
 	return 1;
 }
 
-// 
-int open_precompute(_struct_open_* open, _struct_commit_* cm, const _struct_pp_* pp, const fmpz_t l, const _struct_poly_* poly, const fmpz_t q, int index)
+// compute r
+int pokRep_open_precom(_struct_open_* open, _struct_commit_* cm, const _struct_pp_* pp, const fmpz_t l, const _struct_poly_* poly, const fmpz_t q, int index)
 {
 	int numbits = fmpz_bits(q)-1;	
 	int flag = 1, i = 0, j = 0, cnt = 0;
@@ -294,7 +250,7 @@ int open_precompute(_struct_open_* open, _struct_commit_* cm, const _struct_pp_*
 	TimerOn2(before);
 	fmpz_zero(open->r);
 
-	// f(q) 연산
+	// Fx[d-1]*{2^numbits*(d-1)}+...+Fx[0]
 	for(i = poly->d-1; i >= 0; i--)
 	{
 		fmpz_mul_2exp(open->r, open->r, numbits); // r*2^numbits
@@ -323,7 +279,7 @@ int open_precompute(_struct_open_* open, _struct_commit_* cm, const _struct_pp_*
 	fmpz_tdiv_qr(bn_dv, bn_rem, bn_tmp1, l);
 	fmpz_set(open->r, bn_rem);
 
-	int num_threads = 1; //global_num_threads;//(int)omp_get_num_threads();
+	int num_threads = 1;
 	RunTime[2] += TimerOff2(before+2, after+2);
 
 	if(num_threads == 1)
@@ -338,7 +294,6 @@ int open_precompute(_struct_open_* open, _struct_commit_* cm, const _struct_pp_*
 		int dv_bits = fmpz_bits(bn_dv);
 		int offset = 0;
 		fmpz_t* parallel_tmp = (fmpz_t*)malloc(sizeof(fmpz_t) * num_threads);
-		//printf("thread : %d %d\n", num_threads, dv_bits);
 		
 		for(i=0; i<num_threads; i++)
 			fmpz_init(parallel_tmp[i]);
@@ -402,87 +357,4 @@ int open_precompute(_struct_open_* open, _struct_commit_* cm, const _struct_pp_*
 	fmpz_clear(bn_rem);	
 
 	return flag; 
-}
-
-int open_new(_struct_open_* open, _struct_commit_* cm, const _struct_pp_* pp, const fmpz_t l, const _struct_poly_* poly, const fmpz_t q)
-{
-	int numbits = fmpz_bits(q)-1;	
-	int flag = 1, i = 0, j = 0;
-	fmpz_t bn_tmp1;
-	fmpz_t bn_tmp2;
-	fmpz_t bn_tmp3;
-	fmpz_t bn_dv;
-	fmpz_t bn_rem;
-
-	fmpz_init(bn_tmp1);
-	fmpz_init(bn_tmp2);
-	fmpz_init(bn_tmp3);
-	fmpz_init(bn_dv);
-	fmpz_init(bn_rem);	
-
-	flag = 1;
-	//TimerOn();
-	fmpz_zero(open->r);
-	//printf("numbits : %d %d\n", numbits, (numbits-1)*(poly.d));
-	for(i = poly->d-1; i >= 0; i--)
-	{
-		fmpz_mul_2exp(open->r, open->r, numbits);
-		fmpz_add(open->r, open->r, poly->Fx[i]);
-		fmpz_mod(open->r, open->r, l);
-	}
-	fmpz_zero(bn_tmp1);
-	for(i = poly->d-1; i >= 0; i--)
-	{
-		for(int j = 0; j < fmpz_bits(poly->Fx[i]); j++)
-		{
-			if(fmpz_tstbit(poly->Fx[i], j) == 1)
-				fmpz_setbit(bn_tmp1, j + i*numbits);
-		}
-	}
-
-	fmpz_tdiv_qr(bn_dv, bn_rem, bn_tmp1, l);
-	fmpz_powm(open->Q,	pp->g, bn_dv, pp->G);
-
-	fmpz_clear(bn_tmp1);
-	fmpz_clear(bn_dv);
-	fmpz_clear(bn_rem);
-
-	return flag; 
-}
-
-int open_init(_struct_open_* open)
-{
-	fmpz_init(open->r);
-	fmpz_init(open->Q);
-}
-
-int open_clear(_struct_open_* open)
-{
-	fmpz_clear(open->r);
-	fmpz_clear(open->Q);	
-}
-
-int Ver(const _struct_open_ open, const _struct_commit_ cm, const _struct_pp_ pp, const fmpz_t l)
-{
-	int flag = 1, i = 0;
-	BN_CTX* ctx = BN_CTX_new();
-	fmpz_t Cprime;
-	fmpz_t bn_tmp1;
-	fmpz_t bn_tmp2;
-
-	fmpz_init(Cprime);
-	fmpz_init(bn_tmp1);
-	fmpz_init(bn_tmp2);
-
-	fmpz_powm(bn_tmp1, open.Q, l, pp.G);
-	fmpz_powm(bn_tmp2, pp.g, open.r, pp.G);
-	fmpz_mul(Cprime, bn_tmp1, bn_tmp2);
-	fmpz_mod(Cprime, Cprime, pp.G);
-
-	if(fmpz_cmp(Cprime, cm.C) == 0)
-		flag = 1;
-	else
-		flag = 0;
-
-	return flag;
 }

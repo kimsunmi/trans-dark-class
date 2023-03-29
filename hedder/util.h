@@ -1,8 +1,10 @@
 #ifndef _UTIL_H
-    #include "../hedder/Reducible_commitment.h"
+    #include "../hedder/polynomial_commit.h"
 
     int Read_pp(_struct_polynomial_pp_* pp);
     int Write_pp(const _struct_polynomial_pp_* pp);
+    int pp_init(_struct_pp_* pp);
+    int pp_clear(_struct_pp_* pp);
 
 	int make_poly(_struct_poly_* poly, int d);
     int Read_poly(_struct_poly_* poly);
@@ -14,8 +16,11 @@
     int Write_proof(const _struct_proof_* proof );
 	int Read_proof(_struct_proof_ *proof);
 
-    void generate_random_table(const char* path, int n, int lambda);
-    int read_random_table(const char* path, int n, fmpz_t l, fmpz_t* bL, fmpz_t*bR);
+    int Hprime_func(fmpz_t output, const fmpz_t* in, const int n, const fmpz_t in2);
+    int get_alpha_SHA256(fmpz_t alphaI, fmpz_t input, int idx);
+
+    int KeyGen_RSAsetup( _struct_pp_ *pp, const int lamda );
+    
     int getfilesize(char* path);
     
 	void TimerOn();

@@ -1,5 +1,5 @@
-#include "../hedder/Reducible_commitment.h"
-#include "../hedder/Reducible_polynomial_commitment.h"
+#include "../hedder/polynomial_commit.h"
+#include "../hedder/polynomial_open_verify.h"
 #include "../hedder/util.h"
 
 int Read_pp(_struct_polynomial_pp_* pp)
@@ -80,7 +80,6 @@ int Write_pp(const _struct_polynomial_pp_* pp)
     fclose(fp);
 }
 
-//
 int Read_poly(_struct_poly_* poly)
 {
 	FILE *fp;
@@ -154,7 +153,6 @@ int Write_Commit(const char* path, const _struct_commit_* cm)
 	return (flag != 0 ? 1 : 0);
 }
 
-// pf 에 y랑 D추가됨 
 int Write_proof(const _struct_proof_ *proof )
 {
 	int proof_size = 0;
@@ -190,8 +188,6 @@ int Write_proof(const _struct_proof_ *proof )
 	return (flag > 0 ? 1 : 0);	
 }
 
-
-// y, D 추가해서 읽어야함
 int Read_proof(_struct_proof_ *proof)
 {
 	FILE *fp = NULL;
@@ -300,58 +296,120 @@ int write_poly(const _struct_poly_* poly){
 	return flag;
 }
 
-
-void generate_random_table(const char* path, int n, int lambda)
-{    
-	FILE *fp;
-	fp = fopen(path, "w");
-	flint_rand_t state;
-	fmpz_t bn_tmp;
-    BIGNUM* p = BN_new();
-	BN_generate_prime_ex(p, lambda, 0,NULL,NULL,NULL);
-	
-
-	flint_randinit(state);
-
-	fmpz_init(bn_tmp);
-    //fmpz_randprime(bn_tmp, state, lambda, 1);
-	fprintf(fp, "%s\r\n", BN_bn2hex(p));
-    for(int i = 0 ; i<n ; i++){
-        fmpz_randbits(bn_tmp, state, lambda);
-		fmpz_abs(bn_tmp,bn_tmp);
-		fprintf(fp, "%s ", fmpz_get_str(NULL, 16, bn_tmp));
-
-        fmpz_randbits(bn_tmp, state, lambda);
-		fmpz_abs(bn_tmp,bn_tmp);
-		fprintf(fp, "%s\r\n", fmpz_get_str(NULL, 16, bn_tmp));
-    }
-	fclose(fp);
-	fmpz_clear(bn_tmp);
-	BN_free(p);
-
-}
-
-int read_random_table(const char* path, int n, fmpz_t l, fmpz_t* bL, fmpz_t*bR)
+// D를 벡터로 가져와서 str 싹 다 연결해서 l 출력 
+int Hprime_func(fmpz_t output, const fmpz_t* in, const int n, const fmpz_t in2)
 {
-	FILE *fp;
-	fp = fopen(path, "r");
-	unsigned char buffer[1000]={0};
-	flint_rand_t state;
+    unsigned char digest[SHA256_DIGEST_LENGTH]={0};
+	unsigned char mdString[SHA256_DIGEST_LENGTH*2+1]={0};
+	
+    // D벡터 전부 str 가져와서 붙이기
 
-	flint_randinit(state);
+    char** str_in = calloc(n, sizeof(char*));
+    int str_len_total = 0;
 
-    fscanf(fp, "%s", buffer);
-	fmpz_set_str(l, buffer, 16);
-	if(bL!= NULL && bR != NULL)
-	{
-		for(int i = 0 ; i<n ; i++){
-			fscanf(fp, "%s", buffer);
-			fmpz_set_str(bL[i], buffer, 16);
-			fscanf(fp, "%s", buffer);
-			fmpz_set_str(bR[i], buffer, 16);
-		}
-	}
+    for(int i = 0; i < n; i++) {
+        str_in[i] = fmpz_get_str(NULL, 16, in[i]);
+        str_len_total += strlen(str_in[i]);
+    }
+    char *str_in2 = fmpz_get_str(NULL, 16, in2);
+    str_len_total += strlen(str_in2);
+
+	char *str_concat = calloc(str_len_total + 1, sizeof(char));
+
+    for(int i = 0; i < n; i++) {
+        strcat(str_concat, str_in[i]);
+    }
+    strcat(str_concat, str_in2);
+
+	int concat_len = 0;
+
+	SHA256(str_concat, strlen(str_concat), digest);   
+	for(int i = 0; i < SHA256_DIGEST_LENGTH; i++)
+         sprintf(&mdString[i*2], "%02x", (unsigned int)digest[i]);
+
+	mpz_t u, w;
+	mpz_init_set_str(u,(char*)mdString,16);
+	mpz_init(w);
+	mpz_nextprime(w,u);	
+	fmpz_set_mpz(output, w);
+
+	mpz_clear(u);
+	mpz_clear(w);
+    for(int i = 0; i < n; i++) free(str_in[i]);
+	free(str_in);
+	free(str_in2);
+	free(str_concat);
+
+    return 1;
 }
+
+// make alpha
+int get_alpha_SHA256(fmpz_t alphaI, fmpz_t input, int idx)
+{
+    unsigned char digest[SHA256_DIGEST_LENGTH]={0};
+	unsigned char mdString[SHA256_DIGEST_LENGTH/2+1]={0};
+    char* str_input;
+    fmpz_t tmpz_tmp;
+
+    fmpz_init_set(tmpz_tmp, input);
+
+    fmpz_add_ui(tmpz_tmp, tmpz_tmp, 2*idx);
+    str_input = fmpz_get_str(NULL, 16, tmpz_tmp);
+
+	SHA256(str_input, strlen(str_input), digest);  
+    for(int i = 0; i < SHA256_DIGEST_LENGTH/4; i++){
+        digest[i] = (digest[i] ^ digest[16+i] ^ digest[8+i] ^ digest[24+i]);       
+        sprintf(&mdString[i*2], "%02x", (unsigned int)digest[i]);
+    }
+    fmpz_set_str(alphaI, mdString, 16);
+    free(str_input);
+
+    fmpz_clear(tmpz_tmp);
+    return 1;
+}
+
+int KeyGen_RSAsetup( _struct_pp_ *pp, const int lamda )
+{
+	BIGNUM* p = BN_new();
+	BIGNUM* q = BN_new();
+	BIGNUM* tmp = BN_new();
+	BN_CTX* ctx = BN_CTX_new();
+
+	do{
+		BN_generate_prime_ex(p,(lamda>>1),0,NULL,NULL,NULL);
+		BN_generate_prime_ex(q,(lamda>>1),0,NULL,NULL,NULL);
+		BN_mul(tmp,p,q, ctx);
+		// G = lamda size prime*prime
+		fmpz_set_str(pp->G, BN_bn2hex(tmp), 16);
+	}while(BN_num_bits(tmp) != lamda);
+
+	// g = lamda/2 size random prime 
+	BN_generate_prime_ex(tmp,lamda >> 1,0,NULL,NULL,NULL);
+	fmpz_set_str(pp->g, BN_bn2hex(tmp), 16);
+
+	BN_free(p);
+	BN_free(q);
+	BN_free(tmp);
+	BN_CTX_free(ctx);
+
+	return 1;
+}
+
+int pp_init(_struct_pp_* pp)
+{
+	fmpz_init(pp->G);
+	fmpz_init(pp->g);
+
+	return 1;
+}
+
+int pp_clear(_struct_pp_* pp)
+{
+	fmpz_clear(pp->G);
+	fmpz_clear(pp->g);
+
+	return 1;
+} 
 
 int getfilesize(char* path)
 {

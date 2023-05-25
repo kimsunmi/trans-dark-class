@@ -10,8 +10,8 @@ int main(int argc, char *argv[])
 	int security_level = 2048; // lamda
 	unsigned long long int RunTime = 0, RunTime_IO = 0;
     
-    _struct_polynomial_pp_ pp = {0}; 
-    _struct_poly_ poly = {0}; 
+    _struct_polynomial_pp_ pp={0};
+    _struct_poly_ poly={0};
 
 	if(argc == 2)
 		LOG_D = atoi(argv[1]);
@@ -23,12 +23,13 @@ int main(int argc, char *argv[])
 		LOG_D = 10;
 
 	D =  (1<<(LOG_D)); // 2^degree
+
 	make_poly(&poly, D);
 
 	TimerOn();
-
 	// setup G(group), generater g vector number of polynomials Fx
     pokRep_setup(&pp, security_level, m, D, &poly);
+
 	printf("d_bit %d d-%d q-%d\n", LOG_D, D, (int)fmpz_bits(pp.q)-1);
     RunTime = TimerOff();
 	printf("KeyGen_Time %12llu [us]\n", RunTime);
@@ -36,21 +37,28 @@ int main(int argc, char *argv[])
 	write_poly(&poly);
 
 	TimerOn(); 
+	printf("setup G: \n");
+	fmpz_print(pp.cm_pp.G);
+	printf("\n");
+	
+	printf("setup g: \n");
+	qfb_print(pp.cm_pp.g);
     Write_pp(&pp);
 
     RunTime_IO = TimerOff();
 	printf("KeyGen_I/O_ %12llu [us]\n", RunTime_IO);
-	
+
 	for(int i=0; i < D; i++){
 		fmpz_clear(poly.Fx[D-i-1]);
 	}
 
     for(int i = 0; i < pp.n; i++){
-        fmpz_clear(pp.R[i]);
+        qfb_clear(pp.R[i]);
     }
 
 	free(poly.Fx);
 	free(pp.R);
+	fmpz_clear(pp.q);
 
 	FILE *fp;
 	fp = fopen("record/setup.txt", "a+");

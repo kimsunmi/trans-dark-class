@@ -1,6 +1,7 @@
 #ifndef _UTIL_H
     #include "../hedder/polynomial_commit.h"
-
+    #include "../hedder/polynomial_open_verify.h"
+    
     int Read_pp(_struct_polynomial_pp_* pp);
     int Write_pp(const _struct_polynomial_pp_* pp);
     int pp_init(_struct_pp_* pp);
@@ -16,10 +17,10 @@
     int Write_proof(const _struct_proof_* proof );
 	int Read_proof(_struct_proof_ *proof);
 
-    int Hprime_func(fmpz_t output, const fmpz_t* in, const int n, const fmpz_t in2);
+    int Hprime_func(fmpz_t output, const qfb_t in1, const int n, const qfb_t in2);
     int get_alpha_SHA256(fmpz_t alphaI, fmpz_t input, int idx);
 
-    int KeyGen_RSAsetup( _struct_pp_ *pp, const int lamda );
+    int KeyGen_Class_setup( _struct_pp_ *pp, const int lamda );
     
     int getfilesize(char* path);
     

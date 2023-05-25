@@ -17,15 +17,29 @@ int main(int argc, char *argv[])
     fmpz_t l;
 
     fmpz_init(l);
-    fmpz_init(cm.C );
+    qfb_init(cm.C );
     fmpz_init(open.r);
-    fmpz_init(open.Q);
+    qfb_init(open.Q);
 
 	TimerOn();
     Read_poly(&poly);
     Read_pp(&pp);
     Read_Commit("./Txt/commit.txt", &cm);
     Read_proof(&proof);
+
+    printf("verify의 proof: \n");
+    printf("Q: ");
+    qfb_print(proof.Q);
+    printf("\n");
+    printf("D: ");
+    qfb_print(proof.D);
+    printf("\n");
+    printf("n: %d",proof.n);
+    printf("\n");
+    printf("c: ");
+    fmpz_print(cm.C);
+    printf("\n");
+
     RunTime_IO = TimerOff();
 
     TimerOn();

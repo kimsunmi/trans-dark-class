@@ -42,6 +42,20 @@ int main(int argc, char *argv[])
     TimerOn();
     // write proof(Q,D,(r,s),gx,y) in file "./Txt/proof.txt"
     Write_proof(&proof);
+
+    printf("open의 proof: \n");
+    printf("Q: ");
+    qfb_print(proof.Q);
+    printf("\n");
+    printf("D: ");
+    qfb_print(proof.D);
+    printf("\n");
+    printf("n: %d",proof.n);
+    printf("\n");
+    printf("c: ");
+    fmpz_print(cm.C);
+    printf("\n");
+
     RunTime_IO += TimerOff();
 	printf("__Open_I/O_ %12llu [us]\n", RunTime_IO);
 
@@ -55,8 +69,8 @@ int main(int argc, char *argv[])
     for(int i =0; i < pp.n; i++) {
         fmpz_clear(proof.s[i]);
         fmpz_clear(proof.y[i]);
-        fmpz_clear(proof.D[i]);
-        fmpz_clear(pp.R[i]);
+        qfb_clear(proof.D[i]);
+        qfb_clear(pp.R[i]);
     }
     free(poly.Fx);
     free(proof.s);

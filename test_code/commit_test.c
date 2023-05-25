@@ -22,12 +22,13 @@ int main(int argc, char *argv[])
     _struct_poly_ poly = {0};
     _struct_commit_ cm = {0};
 
-    fmpz_init(cm.C);
+    qfb_init(cm.C);
 	TimerOn();
     Read_pp(&pp);
     Read_poly(&poly);
     RunTime_IO = TimerOff();
     
+    Write_pp(&pp);
     // precomputation table base of g and R. (g,g^2,...g^pp->n , R[0],R[0]^q,...,R[n]^{q^(2^d-1)})
     start_precomputation(&pp, poly);
 
@@ -39,12 +40,12 @@ int main(int argc, char *argv[])
     commit_precompute(&cm, pp.cm_pp, poly, pp.q, -1);
     commit_clear(&cm);
     RunTime = TimerOff();
-	printf("Commit_PRE_ %12llu [us]\n", RunTime);
+	printf("Commit_with_PRECOMPUTE %12llu [us]\n", RunTime);
 
     // compute commitment without precomputation table
 	TimerOn();
     commit_init(&cm);
-    commit_new(&cm, pp.cm_pp, poly, pp.q);
+    commit_new(&cm, &pp, poly, pp.q);
     RunTime = TimerOff();
 
 	printf("Commit_NEW_ %12llu [us]\n", RunTime);
@@ -63,7 +64,7 @@ int main(int argc, char *argv[])
 	}
     for(int i=0; i<pp.n; i++)
 	{
-		fmpz_clear(pp.R[i]);
+		qfb_clear(pp.R[i]);
 	}
     free(poly.Fx);
     free(pp.R);

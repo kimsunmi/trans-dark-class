@@ -29,23 +29,17 @@ int main(int argc, char *argv[])
 	TimerOn();
 	// setup G(group), generater g vector number of polynomials Fx
     pokRep_setup(&pp, security_level, m, D, &poly);
-
 	printf("d_bit %d d-%d q-%d\n", LOG_D, D, (int)fmpz_bits(pp.q)-1);
     RunTime = TimerOff();
+	
 	printf("KeyGen_Time %12llu [us]\n", RunTime);
 
 	write_poly(&poly);
 
 	TimerOn(); 
-	printf("setup G: \n");
-	fmpz_print(pp.cm_pp.G);
-	printf("\n");
-	
-	printf("setup g: \n");
-	qfb_print(pp.cm_pp.g);
     Write_pp(&pp);
-
     RunTime_IO = TimerOff();
+
 	printf("KeyGen_I/O_ %12llu [us]\n", RunTime_IO);
 
 	for(int i=0; i < D; i++){

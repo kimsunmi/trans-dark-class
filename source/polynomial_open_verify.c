@@ -293,19 +293,19 @@ int Open(_struct_proof_ *proof, _struct_polynomial_pp_* pp, _struct_commit_* cm,
         fmpz_clear(gX.Fx[i]);
     for(i=0; i<gL.d; i++)
         fmpz_clear(gL.Fx[i]);
-
-    free(gX.Fx);
-    free(gL.Fx);
-
-    BN_CTX_free(ctx);
-    fmpz_clear(l_prime);
-    fmpz_clear(CD);
     for(int i = 0 ; i < pp->n; i++)
     {
         for(int j = 0; j < gR[i].d; j++)
             fmpz_clear(gR[i].Fx[j]);
+            free(gR[i].Fx);
     }
+    free(gX.Fx);
+    free(gL.Fx);
     free(gR);
+
+    BN_CTX_free(ctx);
+    fmpz_clear(l_prime);
+    fmpz_clear(CD);
 
     return OPEN_RUNTIME;
 }
@@ -393,9 +393,7 @@ int Verify(_struct_polynomial_pp_* pp, _struct_commit_* cm, fmpz_t z, fmpz_t fz,
         fmpz_mod(fmpz_tmp2, fmpz_tmp2, pp->p); 
         fmpz_add(y_i, y_L, fmpz_tmp2);
         fmpz_mod(y_i, y_i, pp->p); // y_(i+1) 계산 완료
-
     }
-
 
     fmpz_mod(fmpz_tmp, proof->gx, l);
     flag &= fmpz_equal(fmpz_tmp, s_i);

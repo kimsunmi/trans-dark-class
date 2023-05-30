@@ -27,8 +27,7 @@ int main(int argc, char *argv[])
     Read_pp(&pp);
     Read_poly(&poly);
     RunTime_IO = TimerOff();
-    
-    Write_pp(&pp);
+
     // precomputation table base of g and R. (g,g^2,...g^pp->n , R[0],R[0]^q,...,R[n]^{q^(2^d-1)})
     start_precomputation(&pp, poly);
 
@@ -40,7 +39,7 @@ int main(int argc, char *argv[])
     commit_precompute(&cm, pp.cm_pp, poly, pp.q, -1);
     commit_clear(&cm);
     RunTime = TimerOff();
-	printf("Commit_with_PRECOMPUTE %12llu [us]\n", RunTime);
+	printf("Commit_with_Precompute_Table %12llu [us]\n", RunTime);
 
     // compute commitment without precomputation table
 	TimerOn();

@@ -27,19 +27,6 @@ int main(int argc, char *argv[])
     Read_Commit("./Txt/commit.txt", &cm);
     Read_proof(&proof);
 
-    printf("verify의 proof: \n");
-    printf("Q: ");
-    qfb_print(proof.Q);
-    printf("\n");
-    printf("D: ");
-    qfb_print(proof.D);
-    printf("\n");
-    printf("n: %d",proof.n);
-    printf("\n");
-    printf("c: ");
-    fmpz_print(cm.C);
-    printf("\n");
-
     RunTime_IO = TimerOff();
 
     TimerOn();
@@ -59,7 +46,7 @@ int main(int argc, char *argv[])
     for(int i =0; i < proof.n; i++) {
         fmpz_clear(proof.s[i]);
         fmpz_clear(proof.y[i]);
-        fmpz_clear(proof.D[i]);
+        qfb_clear(proof.D[i]);
         fmpz_clear(pp.R[i]);
     }
     free(poly.Fx);

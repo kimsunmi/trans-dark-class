@@ -42,21 +42,8 @@ int main(int argc, char *argv[])
     TimerOn();
     // write proof(Q,D,(r,s),gx,y) in file "./Txt/proof.txt"
     Write_proof(&proof);
-
-    printf("open의 proof: \n");
-    printf("Q: ");
-    qfb_print(proof.Q);
-    printf("\n");
-    printf("D: ");
-    qfb_print(proof.D);
-    printf("\n");
-    printf("n: %d",proof.n);
-    printf("\n");
-    printf("c: ");
-    fmpz_print(cm.C);
-    printf("\n");
-
     RunTime_IO += TimerOff();
+    
 	printf("__Open_I/O_ %12llu [us]\n", RunTime_IO);
 
 	FILE *fp;

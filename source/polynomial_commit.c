@@ -57,7 +57,7 @@ int start_precomputation(_struct_polynomial_pp_* pp, const _struct_poly_ poly)
 			qfb_reduce(pre_table[0][j], pre_table[0][j], pp->cm_pp.G);
 		}
 		RunTime1 = TimerOff();
-		printf("Commit__PRE_ %12llu [us]\n", RunTime1);
+		printf("Commit__PRE_Table %12llu [us]\n", RunTime1);
 		fp = fopen("record/precompute.txt", "a+");		
 		fprintf(fp, "%d %d %llu precompute\n", pp->cm_pp.security_level, poly.d, RunTime1);			
 		fclose(fp);

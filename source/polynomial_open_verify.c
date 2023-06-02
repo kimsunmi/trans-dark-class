@@ -162,6 +162,7 @@ int pokRep_open(fmpz_t r, fmpz_t s[], qfb_t Q, const fmpz_t l, const _struct_pol
 int Open(_struct_proof_ *proof, _struct_polynomial_pp_* pp, _struct_commit_* cm, _struct_poly_* poly)
 {
     unsigned long long int OPEN_RUNTIME = 0;
+    unsigned long long int RunTime[2] = {0};
     unsigned long long int* pRuntime = &OPEN_RUNTIME;
     BN_CTX* ctx = BN_CTX_new();
     fmpz_t CD;
@@ -228,7 +229,7 @@ int Open(_struct_proof_ *proof, _struct_polynomial_pp_* pp, _struct_commit_* cm,
 
     // g_1(X)를 절반씩 자르기 시작. (d차 Fx를 n개 갖고 있는 gX)
     // g_(1, L)(X) = g_1[:(d+1)/2]
-    // n번 반복, 절반씩 자르기 
+    // n번 반복, 절반씩 자르기
     for( i = 0; i < n; i++ ){
 
         // 다항식 차수가 홀수인 경우, +1 해놓고 최고차항 계수 0으로 설정
@@ -272,6 +273,8 @@ int Open(_struct_proof_ *proof, _struct_polynomial_pp_* pp, _struct_commit_* cm,
     }
 
     (*pRuntime) += TimerOff();
+    RunTime[0] += TimerOff();
+    
     
     // 최종 상수항
     fmpz_set(proof->gx, gX.Fx[0]);
@@ -284,6 +287,11 @@ int Open(_struct_proof_ *proof, _struct_polynomial_pp_* pp, _struct_commit_* cm,
     pokRep_open(proof->r, proof->s, proof->Q, l_prime, pp, pp->q, &gR, poly);
 
     OPEN_RUNTIME += TimerOff();
+    RunTime[1] += TimerOff();
+
+    printf("__Poly_Open_01 %12llu [us]\n", RunTime[0]);
+    printf("__Poly_Open_02 %12llu [us]\n", RunTime[1]);
+    
 
     fmpz_clear(fmpz_tmp1);
     fmpz_clear(fmpz_tmp2);
@@ -312,6 +320,8 @@ int Open(_struct_proof_ *proof, _struct_polynomial_pp_* pp, _struct_commit_* cm,
 
 int Verify(_struct_polynomial_pp_* pp, _struct_commit_* cm, fmpz_t z, fmpz_t fz, _struct_proof_ *proof)
 {
+    unsigned long long int RunTime[2] = {0};
+    struct timeval before[2]={0}, after[2] = {0};
     int flag = 1;
     char buffer[1000]={0};
     FILE *fp;
@@ -342,7 +352,9 @@ int Verify(_struct_polynomial_pp_* pp, _struct_commit_* cm, fmpz_t z, fmpz_t fz,
         qfb_reduce(CD, CD, pp->cm_pp.G);
     }
 
+    TimerOn2(before);
     flag = PoKRep_Ver(proof->r, proof->Q, CD, proof->s, pp->R, l, pp); // <------ 23.05.23 new issue
+    RunTime[0] += TimerOff2(before, after);
 
     printf("pokrep result>> %d\n", flag); // accept 확인
 
@@ -361,6 +373,8 @@ int Verify(_struct_polynomial_pp_* pp, _struct_commit_* cm, fmpz_t z, fmpz_t fz,
     // s_1, y_1 compute
     fmpz_set(s_i, proof->r);
     fmpz_set(y_i, fz);
+
+    TimerOn2(before+1);
 
     for(int i = 0; i < proof->n ; i++){
         fmpz_mul_2exp(fmpz_tmp, one, (proof->n - i - 1)); // 2^(n-i)
@@ -394,6 +408,7 @@ int Verify(_struct_polynomial_pp_* pp, _struct_commit_* cm, fmpz_t z, fmpz_t fz,
         fmpz_add(y_i, y_L, fmpz_tmp2);
         fmpz_mod(y_i, y_i, pp->p); // y_(i+1) 계산 완료
     }
+    RunTime[1] += TimerOff2(before+1, after+1);
 
     fmpz_mod(fmpz_tmp, proof->gx, l);
     flag &= fmpz_equal(fmpz_tmp, s_i);
@@ -407,6 +422,9 @@ int Verify(_struct_polynomial_pp_* pp, _struct_commit_* cm, fmpz_t z, fmpz_t fz,
     flag &= fmpz_cmp(fmpz_tmp, pp->b) < 0 ? 1 : 0; 
     printf("|g| < b >> %d\n", flag);
 
+
+    printf("PoKReP_verify [0]%12llu\n", RunTime[0]);
+    printf("verify for [1]%12llu\n", RunTime[1]);
     return flag;
 }
 // g^r*

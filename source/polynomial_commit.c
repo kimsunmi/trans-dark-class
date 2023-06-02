@@ -43,14 +43,15 @@ int start_precomputation(_struct_polynomial_pp_* pp, const _struct_poly_ poly)
 
 		for(i=1; i <= pp->n; i++)
 		{
-			for(j=1; j < d/2; j++)
+			d /= 2;
+			for(j=1; j < d; j++)
 			{
 				qfb_init(pre_table[i][j]);
 				qfb_pow_with_root(pre_table[i][j], pre_table[i][j-1], pp->cm_pp.G, pp->q, pp->cm_pp.L); // pow.c
 				qfb_reduce(pre_table[i][j], pre_table[i][j], pp->cm_pp.G);
 			}
 		}
-		for(j=1; j<d; j++)
+		for(j=1; j<poly.d; j++)
 		{
 			qfb_init(pre_table[0][j]);
 			qfb_pow_with_root(pre_table[0][j], pre_table[0][j-1], pp->cm_pp.G, pp->q, pp->cm_pp.L); // pow.c

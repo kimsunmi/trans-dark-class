@@ -10,6 +10,7 @@ int global_num_threads = 1;
 
 int main(int argc, char *argv[])
 {
+    unsigned long long OPEN_RUNTIME;
 	unsigned long long int RunTime = 0, RunTime_IO = 0;
     
     /* setting for thread only one use */
@@ -21,8 +22,13 @@ int main(int argc, char *argv[])
     _struct_polynomial_pp_ pp = {0};
     _struct_poly_ poly = {0};
     _struct_commit_ cm = {0};
+    _struct_open_ open = {0};
+    _struct_proof_ proof = {0};
 
     qfb_init(cm.C);
+    fmpz_init(open.r);
+    fmpz_init(open.Q);
+
 	TimerOn();
     Read_pp(&pp);
     Read_poly(&poly);
@@ -55,6 +61,31 @@ int main(int argc, char *argv[])
 
 	printf("Commit_I/O_ %12llu [us]\n", RunTime_IO);
 
+    TimerOn();
+    // run proof algorithm
+    OPEN_RUNTIME = Open(&proof, &pp, &cm, &poly);
+
+	printf("__Poly_Open %12llu [us]\n", OPEN_RUNTIME);
+
+    TimerOn();
+    // write proof(Q,D,(r,s),gx,y) in file "./Txt/proof.txt"
+    Write_proof(&proof);
+    RunTime_IO += TimerOff();
+    
+	printf("__Open_I/O_ %12llu [us]\n", RunTime_IO);
+
+	FILE *fp;
+	fp = fopen("record/open.txt", "a+");
+	fprintf(fp, "%d %d %llu %llu\n", pp.cm_pp.security_level, poly.d, RunTime_IO, RunTime);			
+	fclose(fp);
+
+    for(int i =0; i < pp.n; i++) {
+        fmpz_clear(proof.s[i]);
+        fmpz_clear(proof.y[i]);
+        qfb_clear(proof.D[i]);
+        qfb_clear(pp.R[i]);
+    }
+
     commit_clear(&cm);
 
     for(int i=0; i<poly.d; i++)
@@ -65,7 +96,11 @@ int main(int argc, char *argv[])
 	{
 		qfb_clear(pp.R[i]);
 	}
-    free(poly.Fx);
+
+    free(proof.s);
+    free(proof.y);
+    free(proof.D);
     free(pp.R);
+    free(poly.Fx);
 	return 0;
 }

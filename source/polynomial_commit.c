@@ -21,7 +21,7 @@ int start_precomputation(_struct_polynomial_pp_* pp, const _struct_poly_ poly)
 	if(isprecomputed==0)
 	{
 		FILE *fp;
-		unsigned long long int RunTime1=0;
+		unsigned long long int RunTime1 = 0;
 		static int d;
 		TimerOff();
 		printf("Start precomputation\n");
@@ -44,11 +44,13 @@ int start_precomputation(_struct_polynomial_pp_* pp, const _struct_poly_ poly)
 		for(i=1; i <= pp->n; i++)
 		{
 			d /= 2;
-			for(j=1; j < d; j++)
-			{
+			for(j=1; (j < d); j++){
+				
 				qfb_init(pre_table[i][j]);
 				qfb_pow_with_root(pre_table[i][j], pre_table[i][j-1], pp->cm_pp.G, pp->q, pp->cm_pp.L); // pow.c
 				qfb_reduce(pre_table[i][j], pre_table[i][j], pp->cm_pp.G);
+
+				
 			}
 		}
 		for(j=1; j<poly.d; j++)
@@ -70,30 +72,40 @@ int start_precomputation(_struct_polynomial_pp_* pp, const _struct_poly_ poly)
 	return isprecomputed;
 }
 
-// compute Commitment = G^f(q,q^2,...)
+// compute Commitment = G^f(q,q^2,...), d_i = R_i^g_(i, R)(q) 계산 
 int commit_precompute(_struct_commit_* cm, const _struct_pp_ pp, const _struct_poly_ poly, const fmpz_t q, int index)
 {
 	static int isfirst = 1;
 	int flag = 1, i = 0, j=0;
 	int n = ceil(log(poly.d));
 	
-	qfb_t qfb_tmp;
-
-	qfb_init(qfb_tmp);
-	qfb_principal_form(cm->C, pp.G);
-
+	
 	if(isprecomputed){
-		qfb_principal_form(qfb_tmp, pp.G);
+		qfb_t qfb_tmp;
+
+		qfb_init(qfb_tmp);
+		qfb_principal_form(cm->C, pp.G);
+		// qfb_principal_form(qfb_tmp, pp.G);
 		// [{pre_table[0][0]^Fx[0] (mod G)}*...*{pre_table[0][d]^Fx[d] (mod G)}](mod G)
 		// product g_i^Fx_i from i = 1 to d 
+
+		
+
 		for(i = 0; i < poly.d; i++)
 		{
+			// printf("\npre_table[%d][%d] ", index+1, i);
+			// qfb_print(pre_table[index+1][i]);
+			// printf("\nidx: %d poly.Fx[%d]: ", index+1, i);
+			// fmpz_print(poly.Fx[i]);
+			
 			qfb_pow_with_root(qfb_tmp, pre_table[index+1][i], pp.G, poly.Fx[i], pp.L); // <--- 23.05.12 HERE IT IS!
 			qfb_reduce(qfb_tmp, qfb_tmp, pp.G);
 			qfb_nucomp(cm->C, cm->C, qfb_tmp, pp.G, pp.L);
 			qfb_reduce(cm->C, cm->C, pp.G);
 		}
+
 		qfb_clear(qfb_tmp);
+
 
 	}
 	else

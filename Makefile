@@ -1,5 +1,5 @@
-CC=gcc
-# CC=clang
+# CC=gcc
+CC=clang
 CFLAGS := -g -lm -lcrypto -lgmp -lflint -lantic -fopenmp -lpthread -fsanitize=address
 SOURCE_DIR = ./source/
 TEST_CODE_DIR = ./test_code/
@@ -11,7 +11,7 @@ TARGET_OPEN = TRANS_Open
 TARGET_VERIFY = TRANS_Verify
 TARGET_precom = TRANS_precom
 
-setup: $(TARGET_SETUP) $(TARGET_COMMIT)
+setup: $(TARGET_SETUP) $(TARGET_COMMIT) $(TARGET_VERIFY)
 open: $(TARGET_OPEN)
 
 all:  $(TARGET_precom) $(TARGET_SETUP) $(TARGET_COMMIT) $(TARGET_OPEN) $(TARGET_VERIFY)

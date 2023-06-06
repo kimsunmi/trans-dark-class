@@ -103,6 +103,7 @@ int open_multipoly(qfb_t* D, const _struct_polynomial_pp_* pp, const _struct_pol
     qfb_init(cm_tmp.C); 
     fmpz_init_set(pp_tmp.G, pp->cm_pp.G);
     qfb_init(pp_tmp.g);
+    fmpz_init(pp_tmp.L);
     qfb_set(pp_tmp.g, pp->R[i]);
 
     // index i에 대해서만 d_i <- R_i^g_(i, R)(q) 계산 
@@ -269,6 +270,15 @@ int Open(_struct_proof_ *proof, _struct_polynomial_pp_* pp, _struct_commit_* cm,
         for(j=0;j<d;j++){
             fmpz_mul(fmpz_tmp2, alphaI, gR[i].Fx[j]); // alphaI * g_{i,R}
             fmpz_add(gX.Fx[j], gL.Fx[j], fmpz_tmp2); // g_(i+1) <- g_(i, L) + alpha_i * g_(i, R)
+
+            // printf("\ni:%d j: %d", i, j); 
+            // printf("\nalpha "); fmpz_print(alphaI);
+            // printf("\ngX_x "); fmpz_print(gX.Fx[j]);
+            // printf("\nfmpz_tmp2 "); fmpz_print(fmpz_tmp2);
+            // printf("\nj: %d gL_x:  ", j);
+			// fmpz_print(gL.Fx[j]);
+            // printf("\n gR_x:  "); fmpz_print(gR[i].Fx[j]);
+            // printf("\n gX_x:  "); fmpz_print(gX.Fx[j]);
         }
     }
 

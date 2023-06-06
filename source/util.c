@@ -410,6 +410,7 @@ int get_alpha_SHA256(fmpz_t alphaI, fmpz_t input, int idx)
 int KeyGen_Class_setup( _struct_pp_ *pp, const int lamda )
 {
 	fmpz_t fmpz_p;
+	fmpz_init(fmpz_p);
 
 	BIGNUM* tmp = BN_new();
 	BIGNUM* bn_4 = BN_new();

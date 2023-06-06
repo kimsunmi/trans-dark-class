@@ -43,7 +43,7 @@ int main(int argc, char *argv[])
 
     // product g_i^Fx_i from i = 1 to d 
     commit_precompute(&cm, pp.cm_pp, poly, pp.q, -1);
-    commit_clear(&cm);
+    //commit_clear(&cm);
     RunTime = TimerOff();
 	printf("Commit_with_Precompute_Table %12llu [us]\n", RunTime);
 
@@ -65,7 +65,7 @@ int main(int argc, char *argv[])
     // run proof algorithm
     OPEN_RUNTIME = Open(&proof, &pp, &cm, &poly);
 
-	printf("__Poly_Open %12llu [us]\n", OPEN_RUNTIME);
+	printf("\n__Poly_Open %12llu [us]\n", OPEN_RUNTIME);
 
     TimerOn();
     // write proof(Q,D,(r,s),gx,y) in file "./Txt/proof.txt"

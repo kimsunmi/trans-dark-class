@@ -43,7 +43,7 @@ int start_precomputation(_struct_polynomial_pp_* pp, const _struct_poly_ poly)
 
 		for(i=1; i <= pp->n; i++)
 		{
-			d /= 2;
+			d /= 2; // 23.05.26 범위 수정
 			for(j=1; (j < d); j++){
 				
 				qfb_init(pre_table[i][j]);
@@ -174,7 +174,7 @@ int pokRep_open_precom(_struct_open_* open, _struct_commit_* cm, const _struct_p
 	TimerOn2(before);
 	fmpz_zero(open->r);
 
-	// Fx[d-1]*{2^numbits*(d-1)}+...+Fx[0]
+	// Fx[d-1]*{2^numbits*(d-1)}+...+Fx[0], where 2^numbits = q = F(q)
 	for(i = poly->d-1; i >= 0; i--)
 	{
 		fmpz_mul_2exp(open->r, open->r, numbits); // r*2^numbits
@@ -212,6 +212,7 @@ int pokRep_open_precom(_struct_open_* open, _struct_commit_* cm, const _struct_p
 		// Q <- G_1^(bn_dv) mod G
 		// fmpz_powm(open->Q,	pp->g, bn_dv, pp->G); 
 		qfb_pow_with_root(open->Q, pp->g, pp->G, bn_dv, pp->L);
+		qfb_reduce(open->Q,open->Q,pp->G);
 		RunTime[3] += TimerOff2(before+3, after+3);	
 	}
 	else

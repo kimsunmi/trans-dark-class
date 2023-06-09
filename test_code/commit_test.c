@@ -1,3 +1,4 @@
+/*---------------------change file name "commit_test.c" -> "prover.c"-------------------------*/
 #include "../hedder/polynomial_commit.h"
 #include "../hedder/polynomial_open_verify.h"
 #include "../hedder/util.h"
@@ -7,6 +8,7 @@ int global_num_threads = 1;
 // start_precomputation: make table base of g and R. g,g^2,...,g^pp->n, R[0],R[0]^q,...,R[0]^{q^(2^d-1)},...,R[1],...,R[n],...
 // commit_precom: compute g^Fx[0],...,g^Fx[d] with precomputation table
 // commit_new: compute g^Fx[0],...,g^Fx[d] without precomputation table
+// open: make proof
 
 int main(int argc, char *argv[])
 {

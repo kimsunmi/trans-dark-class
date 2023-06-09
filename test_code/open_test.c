@@ -1,3 +1,4 @@
+/*------------------outdated from 23.06.09------------------------*/
 #include "../hedder/polynomial_commit.h"
 #include "../hedder/polynomial_open_verify.h"
 #include "../hedder/util.h"

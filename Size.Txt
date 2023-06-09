@@ -7,3 +7,9 @@ Txt/proof.txt 1816
 Txt/pp.txt 2320
 Txt/commit.txt 194
 Txt/proof.txt 3358
+Txt/pp.txt 2518
+Txt/commit.txt 196
+Txt/proof.txt 3664
+Txt/pp.txt 2322
+Txt/commit.txt 194
+Txt/proof.txt 3361

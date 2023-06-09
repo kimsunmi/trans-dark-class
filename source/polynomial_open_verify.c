@@ -132,6 +132,7 @@ int pokRep_open(fmpz_t r, fmpz_t s[], qfb_t Q, const fmpz_t l, const _struct_pol
     qfb_principal_form(Q,pp->cm_pp.G); // set Q to 1
     qfb_init(pp_tmp.g);
     qfb_set(pp_tmp.g, pp->cm_pp.g);
+    fmpz_init(pp_tmp.L);
 
     pokRep_open_precom(&open, &cm, &pp_tmp, l, f, q, -1); // compute r ← x_1 mod ℓ, Q
     fmpz_set(r, open.r); 

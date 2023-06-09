@@ -351,6 +351,7 @@ int Verify(_struct_polynomial_pp_* pp, _struct_commit_* cm, fmpz_t z, fmpz_t fz,
     qfb_init(CD);
     fmpz_init(fmpz_tmp);
     fmpz_init(fmpz_tmp2);
+    fmpz_init(one);
 
     fmpz_one(one);
 

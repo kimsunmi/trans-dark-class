@@ -34,7 +34,7 @@ int start_precomputation(_struct_polynomial_pp_* pp, const _struct_poly_ poly)
 		qfb_init(pre_table[0][0]);
 		qfb_set(pre_table[0][0],pp->cm_pp.g);
 
-		// R[i]: 수정 완료
+		// R[i]
 		for(i=1; i<= pp->n; i++)
 		{
 			qfb_init(pre_table[i][0]);
@@ -43,7 +43,7 @@ int start_precomputation(_struct_polynomial_pp_* pp, const _struct_poly_ poly)
 
 		for(i=1; i <= pp->n; i++)
 		{
-			d /= 2; // 23.05.26 범위 수정
+			d /= 2;
 			for(j=1; (j < d); j++){
 				
 				qfb_init(pre_table[i][j]);
@@ -85,11 +85,8 @@ int commit_precompute(_struct_commit_* cm, const _struct_pp_ pp, const _struct_p
 
 		qfb_init(qfb_tmp);
 		qfb_principal_form(cm->C, pp.G);
-		// qfb_principal_form(qfb_tmp, pp.G);
 		// [{pre_table[0][0]^Fx[0] (mod G)}*...*{pre_table[0][d]^Fx[d] (mod G)}](mod G)
 		// product g_i^Fx_i from i = 1 to d 
-
-		
 
 		for(i = 0; i < poly.d; i++)
 		{
@@ -98,7 +95,7 @@ int commit_precompute(_struct_commit_* cm, const _struct_pp_ pp, const _struct_p
 			// printf("\nidx: %d poly.Fx[%d]: ", index+1, i);
 			// fmpz_print(poly.Fx[i]);
 			
-			qfb_pow_with_root(qfb_tmp, pre_table[index+1][i], pp.G, poly.Fx[i], pp.L); // <--- 23.05.12 HERE IT IS!
+			qfb_pow_with_root(qfb_tmp, pre_table[index+1][i], pp.G, poly.Fx[i], pp.L);
 			qfb_reduce(qfb_tmp, qfb_tmp, pp.G);
 			qfb_nucomp(cm->C, cm->C, qfb_tmp, pp.G, pp.L);
 			qfb_reduce(cm->C, cm->C, pp.G);

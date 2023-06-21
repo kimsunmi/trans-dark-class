@@ -1,129 +1,95 @@
-#include "../hedder/Reducible_commitment.h"
-#include "../hedder/Reducible_polynomial_commitment.h"
+#include "../hedder/polynomial_commit.h"
+#include "../hedder/polynomial_open_verify.h"
 #include "../hedder/util.h"
-#include <omp.h>
-int global_num_threads = 1;
+
+// group G에서 g, m, 스칼라 q를 뽑아 g*m 연산과 g^q연산의 차이
+struct class
+{
+    fmpz_t G; // group
+    qfb_t g_1; // generator
+    qfb_t g_2; // generator
+    qfb_t g1; // generator
+    qfb_t g2; // generator
+    fmpz_t L; // discriminant
+};
+struct rsa
+{
+    fmpz_t G; // Group (rsa modulus)
+    qfb_t g; // generator
+};
+
 int main(int argc, char *argv[])
 {
-    FILE *fp;
-    char buffer[10000];
-    int flag = 1;
-    int m = 1;
-    int LOG_D;
-	int security_level = 2048; // 
-	unsigned long long int RunTime = 0, RunTime_IO = 0;
+    struct class class_pp;
+    struct rsa rsa_pp;
     
-    _struct_polynomial_pp_ pp, pp1, pp2, pp3;
-    _struct_poly_ poly;
-    _struct_open_ open;
-    _struct_commit_ cm, cm1, cm2;
-    _struct_proof_ proof1, proof2;
+    BIGNUM* tmp = BN_new();
+    BIGNUM* bn_4 = BN_new();
+	BIGNUM* bn_3 = BN_new();
+    
+    fmpz_t fmpz_p;
+    fmpz_t q;
 
-    fmpz_t l;
-    fmpz_init(l);
-    fmpz_init(cm.C);
-    fmpz_init(open.r);
-    fmpz_init(open.Q);
-    global_num_threads = 1;
-    
-	if(argc == 2)
-		LOG_D = atoi(argv[1]);
-    else if(argc == 3)
-    {
-		security_level = atoi(argv[1]);
-		LOG_D = atoi(argv[2]);        
+	fmpz_init(fmpz_p);
+    fmpz_init(class_pp.G);
+    qfb_init(class_pp.g_1);
+    qfb_init(class_pp.g_2);
+    fmpz_init(class_pp.L);
+
+    unsigned long long int RunTime = 0;
+
+    int n = 10; // degree의 최대 차수
+    int d = 1<<10; // degree
+    int qbit = 128*(2*n + 1)+1; // scalar q
+
+	fmpz_zero(q);
+	fmpz_setbit(q, qbit); // set qbit with pp->q
+
+    int lamda = 512; // security level
+
+    // class group: make G, g_1, g_2
+    do{
+	 	BN_generate_prime_ex(tmp, lamda, 1, bn_4, bn_3, NULL);
+		fmpz_set_str(class_pp.G, BN_bn2hex(tmp), 16);
+		fmpz_neg(class_pp.G, class_pp.G);
+	}while(BN_num_bits(tmp) != lamda);
+
+    do{
+        BN_generate_prime_ex(tmp, lamda/4, 0, bn_4, bn_3, NULL);
+		fmpz_set_str(fmpz_p, BN_bn2hex(tmp), 16);
+		qfb_prime_form(class_pp.g_1, class_pp.G, fmpz_p);
+    }while (!qfb_is_primitive(class_pp.g_1) || !qfb_is_reduced(class_pp.g_1) || fmpz_cmp((class_pp.g_1)->a, (class_pp.g_1)->b) <= 0 ); 
+    do{
+        BN_generate_prime_ex(tmp, lamda/4, 0, bn_4, bn_3, NULL);
+		fmpz_set_str(fmpz_p, BN_bn2hex(tmp), 16);
+		qfb_prime_form(class_pp.g_2, class_pp.G, fmpz_p);
+    }while (!qfb_is_primitive(class_pp.g_2) || !qfb_is_reduced(class_pp.g_2) || fmpz_cmp((class_pp.g_2)->a, (class_pp.g_2)->b) <= 0 ); 
+
+    qfb_set(class_pp.g1, class_pp.g_1);
+    qfb_set(class_pp.g2, class_pp.g_2);
+
+    // 시간차이를 보기 위해 d번 연산 반복-> G*g vs g^q(scalar)
+    // G*g
+    TimerOn();
+    for(int i = 0; i < d; i++){
+        qfb_nucomp(class_pp.g_1, class_pp.g_1, class_pp.g_2, class_pp.G, class_pp.L);
+        qfb_reduce(class_pp.g_1, class_pp.g_1, class_pp.G);
     }
-    else if(argc == 4)
-    {
-		security_level = atoi(argv[1]);
-		LOG_D = atoi(argv[2]);          
-        global_num_threads = atoi(argv[3]) < omp_get_max_threads() ? atoi(argv[3]) : omp_get_max_threads();
+    RunTime = TimerOff();
+    printf("group_Time %12llu [us]\n", RunTime);
+
+    qfb_set(class_pp.g_1, class_pp.g1);
+    qfb_set(class_pp.g_2, class_pp.g2);
+
+    TimerOn();
+
+    // g^q
+    for(int i = 0; i < d; i++){
+        qfb_pow_with_root(class_pp.g_1, class_pp.g_2, class_pp.G, q, class_pp.L);
+        qfb_reduce(class_pp.g_1, class_pp.g_1, class_pp.G);
     }
-	else
-		LOG_D = 10;
-	printf("d_bit %d d-%d\r\n", LOG_D, (1<<(LOG_D)));
-
-	make_poly(&poly,(1<<(LOG_D)));
-    Read_poly(&poly);
-
-	TimerOn();
-    poly_commitment_setup(&pp, security_level, m, poly.d, &poly);
     RunTime = TimerOff();
-	printf("KeyGen_Time %12llu\r\n", RunTime);
-
-	TimerOn();
-    Write_pp(&pp);
-    RunTime_IO = TimerOff();
-	printf("KeyGen_I/O_ %12llu\r\n\n", RunTime_IO);
-    
-
-	fp = fopen("record/setup.txt", "a+");
-	fprintf(fp, "%4d %9d %12llu %12llu %2d\r\n", pp.cm_pp.security_level, poly.d, RunTime_IO, RunTime, global_num_threads);
-	fclose(fp);
-
-    start_precomputation(&pp, poly);
-
-	//////////////////////////////////////////////////////////////////
-
-	TimerOn();
-    Read_pp(&pp1);
-    RunTime_IO = TimerOff();
-
-	TimerOn();
-    commit_precompute(&cm, pp1.cm_pp, poly, pp1.q, -1);
-    RunTime = TimerOff();
-	printf("Commit_Time %12llu\r\n", RunTime);
-
-	TimerOn();
-    Write_Commit("./Txt/commit.txt", &cm);
-    RunTime_IO += TimerOff();
-	printf("Commit_I/O_ %12llu\r\n\n", RunTime_IO);
-
-	fp = fopen("record/commit.txt", "a+");
-	fprintf(fp, "%4d %9d %12llu %12llu %2d\r\n", pp1.cm_pp.security_level, poly.d, RunTime_IO, RunTime, global_num_threads);
-	fclose(fp);
-
-    //////////////////////////////////////////////////////////////////
-	TimerOn();
-    Read_pp(&pp2);
-    Read_Commit("./Txt/commit.txt", &cm1);
-    RunTime_IO = TimerOff();
-
-    TimerOn();
-    Open(&proof1, &pp2, &cm1, &poly);
-    RunTime = TimerOff();
-	printf("__Poly_Open %12llu\r\n", RunTime);
-
-    TimerOn();
-    Write_proof(&proof1);
-    RunTime_IO += TimerOff();
-	printf("__Open_I/O_ %12llu\r\n\n", RunTime_IO);
-
-	fp = fopen("record/open.txt", "a+");
-	fprintf(fp, "%4d %9d %12llu %12llu %2d\r\n", pp2.cm_pp.security_level, poly.d, RunTime_IO, RunTime, global_num_threads);	
-	fclose(fp);
-
-    //////////////////////////////////////////////////////////////////
-	TimerOn();
-    Read_pp(&pp3);
-    Read_Commit("./Txt/commit.txt", &cm2);
-    Read_proof(&proof2);
-    RunTime_IO = TimerOff();
-
-    TimerOn();
-    flag = Verify(&proof2, &pp3, &cm2,);
-    RunTime = TimerOff();
-    printf("Poly_Verify %12llu\r\n", RunTime);
-    printf("Verify_I/O_ %12llu [%d]\r\n\n", RunTime_IO, flag);
-
-
-	fp = fopen("record/verify.txt", "a+");
-	fprintf(fp, "%4d %9d %12llu %12llu %2d [%d]\r\n", pp3.cm_pp.security_level, poly.d, RunTime_IO, RunTime, global_num_threads, flag);			
-	fclose(fp);
-
-	fp = fopen("record/size.txt", "a+");
-	fprintf(fp, "%d %d %d %d\r\n", pp3.cm_pp.security_level, getfilesize("Txt/pp.txt"), getfilesize("Txt/commit.txt"), getfilesize("Txt/proof.txt"));
-	fclose(fp);
+    printf("scalar_Time %12llu [us]\n", RunTime);
 
 	return 0;
 }

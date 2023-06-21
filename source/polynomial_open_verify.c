@@ -107,7 +107,7 @@ int open_multipoly(qfb_t* D, const _struct_polynomial_pp_* pp, const _struct_pol
     qfb_set(pp_tmp.g, pp->R[i]);
 
     // index i에 대해서만 d_i <- R_i^g_(i, R)(q) 계산 
-    commit_precompute(&cm_tmp, pp_tmp, poly, q, i); //<--- 23.05.12 division by ZERO IN CASE 3
+    commit_precompute(&cm_tmp, pp_tmp, poly, q, i);
     qfb_set(D[i], cm_tmp.C);
     // printf("d[%d]", i); fmpz_print(D[i]); printf("\n");
 

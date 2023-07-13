@@ -45,7 +45,7 @@ int main(int argc, char *argv[])
 	for(int i=0; i < D; i++){
 		fmpz_clear(poly.Fx[D-i-1]);
 	}
-
+	
     for(int i = 0; i < pp.n; i++){
         qfb_clear(pp.R[i]);
     }

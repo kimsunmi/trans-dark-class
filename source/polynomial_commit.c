@@ -49,8 +49,6 @@ int start_precomputation(_struct_polynomial_pp_* pp, const _struct_poly_ poly)
 				qfb_init(pre_table[i][j]);
 				qfb_pow_with_root(pre_table[i][j], pre_table[i][j-1], pp->cm_pp.G, pp->q, pp->cm_pp.L); // pow.c
 				qfb_reduce(pre_table[i][j], pre_table[i][j], pp->cm_pp.G);
-
-				
 			}
 		}
 		for(j=1; j<poly.d; j++)
@@ -72,13 +70,12 @@ int start_precomputation(_struct_polynomial_pp_* pp, const _struct_poly_ poly)
 	return isprecomputed;
 }
 
-// compute Commitment = G^f(q,q^2,...), d_i = R_i^g_(i, R)(q) 계산 
+// open 시 compute Commitment = G^f(q,q^2,...), d_i = R_i^g_(i, R)(q) 계산 
 int commit_precompute(_struct_commit_* cm, const _struct_pp_ pp, const _struct_poly_ poly, const fmpz_t q, int index)
 {
 	static int isfirst = 1;
 	int flag = 1, i = 0, j=0;
 	int n = ceil(log(poly.d));
-	
 	
 	if(isprecomputed){
 		qfb_t qfb_tmp;
@@ -149,7 +146,7 @@ int commit_clear(_struct_commit_* cm){
 	return 1;
 }
 
-// compute r
+// open 시 compute r
 int pokRep_open_precom(_struct_open_* open, _struct_commit_* cm, const _struct_pp_* pp, const fmpz_t l, const _struct_poly_* poly, const fmpz_t q, int index)
 {
 	int numbits = fmpz_bits(q)-1;	

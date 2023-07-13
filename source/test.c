@@ -3,25 +3,16 @@
 #include "../hedder/util.h"
 
 // group G에서 g, m, 스칼라 q를 뽑아 g*m 연산과 g^q연산의 차이
-struct class
-{
-    fmpz_t G; // group
-    qfb_t g_1; // generator
-    qfb_t g_2; // generator
-    qfb_t g1; // generator
-    qfb_t g2; // generator
-    fmpz_t L; // discriminant
-};
-struct rsa
-{
-    fmpz_t G; // Group (rsa modulus)
-    qfb_t g; // generator
-};
+
 
 int main(int argc, char *argv[])
 {
-    struct class class_pp;
-    struct rsa rsa_pp;
+    _struct_polynomial_pp_ class_pp = {0};
+    // struct rsa rsa_pp;
+    qfb_t* pre_table;
+    qfb_t class_g;
+    qfb_t tmp_g;
+
     
     BIGNUM* tmp = BN_new();
     BIGNUM* bn_4 = BN_new();
@@ -29,67 +20,71 @@ int main(int argc, char *argv[])
     
     fmpz_t fmpz_p;
     fmpz_t q;
+    int qbit;
 
-	fmpz_init(fmpz_p);
-    fmpz_init(class_pp.G);
-    qfb_init(class_pp.g_1);
-    qfb_init(class_pp.g_2);
-    fmpz_init(class_pp.L);
+    fmpz_init(q);
+    Read_pp(&class_pp);
 
-    unsigned long long int RunTime = 0;
+    unsigned long long int Runtime_class_g = 0, Runtime_class_s = 0, Runtime_class_g2=0, Runtime_class_s2=0;
 
-    int n = 10; // degree의 최대 차수
-    int d = 1<<10; // degree
-    int qbit = 128*(2*n + 1)+1; // scalar q
+    qfb_init(class_g);
+    qfb_init(tmp_g);
 
-	fmpz_zero(q);
-	fmpz_setbit(q, qbit); // set qbit with pp->q
+    pre_table = (qfb_t*)malloc(sizeof(qfb_t)*class_pp.d);
+    for(int i = 0; i < class_pp.d; i++){
+        qfb_init(pre_table[i]);
+    }
 
-    int lamda = 512; // security level
-
-    // class group: make G, g_1, g_2
-    do{
-	 	BN_generate_prime_ex(tmp, lamda, 1, bn_4, bn_3, NULL);
-		fmpz_set_str(class_pp.G, BN_bn2hex(tmp), 16);
-		fmpz_neg(class_pp.G, class_pp.G);
-	}while(BN_num_bits(tmp) != lamda);
-
-    do{
-        BN_generate_prime_ex(tmp, lamda/4, 0, bn_4, bn_3, NULL);
+    do{        
+        BN_generate_prime_ex(tmp, class_pp.cm_pp.security_level/4, 0, bn_4, bn_3, NULL);
 		fmpz_set_str(fmpz_p, BN_bn2hex(tmp), 16);
-		qfb_prime_form(class_pp.g_1, class_pp.G, fmpz_p);
-    }while (!qfb_is_primitive(class_pp.g_1) || !qfb_is_reduced(class_pp.g_1) || fmpz_cmp((class_pp.g_1)->a, (class_pp.g_1)->b) <= 0 ); 
-    do{
-        BN_generate_prime_ex(tmp, lamda/4, 0, bn_4, bn_3, NULL);
-		fmpz_set_str(fmpz_p, BN_bn2hex(tmp), 16);
-		qfb_prime_form(class_pp.g_2, class_pp.G, fmpz_p);
-    }while (!qfb_is_primitive(class_pp.g_2) || !qfb_is_reduced(class_pp.g_2) || fmpz_cmp((class_pp.g_2)->a, (class_pp.g_2)->b) <= 0 ); 
+		qfb_prime_form(class_g, class_pp.cm_pp.G, fmpz_p);
+    }while (!qfb_is_primitive(class_g) || !qfb_is_reduced(class_g) || fmpz_cmp((class_g)->a, (class_g)->b) <= 0 ); 
 
-    qfb_set(class_pp.g1, class_pp.g_1);
-    qfb_set(class_pp.g2, class_pp.g_2);
-
+    // printf("g를 새로 뽑은 것: ");
+    // qfb_print(class_g);
+    // printf("\n");
+    // qfb_print(class_pp.cm_pp.g);
+    // printf("\n");
     // 시간차이를 보기 위해 d번 연산 반복-> G*g vs g^q(scalar)
     // G*g
-    TimerOn();
-    for(int i = 0; i < d; i++){
-        qfb_nucomp(class_pp.g_1, class_pp.g_1, class_pp.g_2, class_pp.G, class_pp.L);
-        qfb_reduce(class_pp.g_1, class_pp.g_1, class_pp.G);
-    }
-    RunTime = TimerOff();
-    printf("group_Time %12llu [us]\n", RunTime);
-
-    qfb_set(class_pp.g_1, class_pp.g1);
-    qfb_set(class_pp.g_2, class_pp.g2);
-
-    TimerOn();
-
     // g^q
-    for(int i = 0; i < d; i++){
-        qfb_pow_with_root(class_pp.g_1, class_pp.g_2, class_pp.G, q, class_pp.L);
-        qfb_reduce(class_pp.g_1, class_pp.g_1, class_pp.G);
+    TimerOn();
+    for(int i = 1; i < 10000; i++){
+        qfb_nucomp(tmp_g, class_g, class_pp.cm_pp.g, class_pp.cm_pp.G, class_pp.cm_pp.L);
+        qfb_reduce(tmp_g, tmp_g, class_pp.cm_pp.G);
+        //qfb_nucomp(class_g, class_g, class_pp.cm_pp.g, class_pp.cm_pp.G, class_pp.cm_pp.L);
+        //qfb_reduce(class_g, class_g, class_pp.cm_pp.G);
     }
-    RunTime = TimerOff();
-    printf("scalar_Time %12llu [us]\n", RunTime);
+    Runtime_class_g = TimerOff();
+
+    printf("\n");
+    qfb_set(pre_table[0], class_pp.cm_pp.g);
+    // qbit = 128*(2*class_pp.n + 1)+1;
+	// fmpz_setbit(q, qbit); // set qbit with pp->q
+
+    // fmpz_setbit(q, 1);
+    // fmpz_print(q);
+    // printf("\n\n");
+
+    TimerOn();
+    for(int j=1; j < 10000; j++)
+    {
+        qfb_pow_with_root(tmp_g, class_pp.cm_pp.g, class_pp.cm_pp.G, class_pp.q , class_pp.cm_pp.L); 
+        qfb_reduce(tmp_g, tmp_g, class_pp.cm_pp.G);
+    }
+    Runtime_class_s = TimerOff();
+
+    printf("group_Time %12llu [us]\n", Runtime_class_g);
+    printf("scalar_Time %12llu [us]\n", Runtime_class_s);
+
+
+    fmpz_clear(fmpz_p);
+    fmpz_clear(q);
+    for(int i=0; i<class_pp.n; i++){
+        qfb_clear(pre_table[i]);
+    }
+    free(pre_table);
 
 	return 0;
 }

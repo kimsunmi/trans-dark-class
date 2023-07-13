@@ -63,6 +63,8 @@ int main(int argc, char *argv[])
 
 	printf("Commit_I/O_ %12llu [us]\n", RunTime_IO);
 
+    /////////////////////////////////////////////////////
+    
     TimerOn();
     // run proof algorithm
     OPEN_RUNTIME = Open(&proof, &pp, &cm, &poly);

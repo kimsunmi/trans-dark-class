@@ -164,7 +164,7 @@ int pokRep_open(fmpz_t r, fmpz_t s[], qfb_t Q, const fmpz_t l, const _struct_pol
 int Open(_struct_proof_ *proof, _struct_polynomial_pp_* pp, _struct_commit_* cm, _struct_poly_* poly)
 {
     unsigned long long int OPEN_RUNTIME = 0;
-    unsigned long long int RunTime[2] = {0};
+    unsigned long long int RunTime[4] = {0};
     unsigned long long int* pRuntime = &OPEN_RUNTIME;
     BN_CTX* ctx = BN_CTX_new();
     fmpz_t CD;
@@ -253,9 +253,14 @@ int Open(_struct_proof_ *proof, _struct_polynomial_pp_* pp, _struct_commit_* cm,
             fmpz_set(gL.Fx[j], gX.Fx[j]); // g_(i, L): g_i 왼쪽 부분 자르기
             fmpz_set(gR[i].Fx[j], gX.Fx[d + j]); // g_(i, R): g_i 나머지 부분 자르기 
         }
+        (*pRuntime) += TimerOff();
+
+        TimerOn();
         // d_i <- R_i^g_(i, R)(q)
         open_multipoly(proof->D, pp, gR[i], pp->q, i);
+        RunTime[3] = TimerOff();
         
+        TimerOn();
         // y[i] += g_(i, R)[j]*z^j
         for(j=0;j<d;j++){
             fmpz_powm_ui(fmpz_tmp1, poly->z, j, pp->p); // z^j mod p
@@ -282,27 +287,25 @@ int Open(_struct_proof_ *proof, _struct_polynomial_pp_* pp, _struct_commit_* cm,
             // printf("\n gX_x:  "); fmpz_print(gX.Fx[j]);
         }
     }
-
-    (*pRuntime) += TimerOff();
     RunTime[0] += TimerOff();
+    (*pRuntime) += RunTime[0];
     
     
     // 최종 상수항
     fmpz_set(proof->gx, gX.Fx[0]);
 
     TimerOn();
-    
     // make l prime using proof->D
     Hprime_func(l_prime, proof->D, proof->n, cm->C);
     // input (G, g벡터, r벡터), CD, (f(q)벡터, g(q)벡터)
     pokRep_open(proof->r, proof->s, proof->Q, l_prime, pp, pp->q, &gR, poly);
 
-    OPEN_RUNTIME += TimerOff();
     RunTime[1] += TimerOff();
+    (*pRuntime) += RunTime[1];
 
-    printf("__Poly_Open_01 %12llu [us]\n", RunTime[0]);
-    printf("__Poly_Open_02 %12llu [us]\n", RunTime[1]);
-    
+    printf("__Poly_Open_for %12llu [us]\n", RunTime[0]);
+    printf("__Poly_Open_PokRep %12llu [us]\n", RunTime[1]);
+    printf("__Poly_Open_D_i %12llu [us]\n", RunTime[2]);
 
     fmpz_clear(fmpz_tmp1);
     fmpz_clear(fmpz_tmp2);

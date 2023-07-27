@@ -10,7 +10,6 @@ static int precompute_num = 0, isprecomputed = 0;
 
 struct timeval before[10]={0}, after[10] = {0};
 unsigned long long int RunTime[10] = {0};
-
 // make precomputation table (0,0)...(0,2^10)
 //                           ...
 //                           (n,0)...(n,2^10)
@@ -171,7 +170,7 @@ int pokRep_open_precom(_struct_open_* open, _struct_commit_* cm, const _struct_p
 	// Fx[d-1]*{2^numbits*(d-1)}+...+Fx[0], where 2^numbits = q = F(q)
 	for(i = poly->d-1; i >= 0; i--)
 	{
-		fmpz_mul_2exp(open->r, open->r, numbits); // r*2^numbits
+		fmpz_mul_2exp(open->r, open->r, numbits); // r*2^q -> f[d-1]*2^q
 		fmpz_add(open->r, open->r, poly->Fx[i]);
 	}
 	RunTime[0] += TimerOff2(before, after);

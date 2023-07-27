@@ -33,6 +33,9 @@ int main(int argc, char *argv[])
 
 	TimerOn();
     Read_pp(&pp);
+    printf("\ncm p: ");
+    fmpz_print(pp.q);
+    printf("\n");
     Read_poly(&poly);
     RunTime_IO = TimerOff();
 
@@ -64,7 +67,7 @@ int main(int argc, char *argv[])
 	printf("Commit_I/O_ %12llu [us]\n", RunTime_IO);
 
     /////////////////////////////////////////////////////
-    
+
     TimerOn();
     // run proof algorithm
     OPEN_RUNTIME = Open(&proof, &pp, &cm, &poly);

@@ -128,11 +128,13 @@ int pokRep_open(fmpz_t r, fmpz_t s[], qfb_t Q, const fmpz_t l, const _struct_pol
     fmpz_init(open.r);
     qfb_init(open.Q);
     fmpz_init_set(pp_tmp.G, pp->cm_pp.G);
-
-    qfb_principal_form(Q,pp->cm_pp.G); // set Q to 1
     qfb_init(pp_tmp.g);
     qfb_set(pp_tmp.g, pp->cm_pp.g);
+
+    qfb_principal_form(Q,pp->cm_pp.G); // set Q to 1
+
     fmpz_init(pp_tmp.L);
+    fmpz_init(pp->cm_pp.L);
 
     pokRep_open_precom(&open, &cm, &pp_tmp, l, f, q, -1); // compute r ← x_1 mod ℓ, Q
     fmpz_set(r, open.r); 
@@ -253,12 +255,12 @@ int Open(_struct_proof_ *proof, _struct_polynomial_pp_* pp, _struct_commit_* cm,
             fmpz_set(gL.Fx[j], gX.Fx[j]); // g_(i, L): g_i 왼쪽 부분 자르기
             fmpz_set(gR[i].Fx[j], gX.Fx[d + j]); // g_(i, R): g_i 나머지 부분 자르기 
         }
-        (*pRuntime) += TimerOff();
+        RunTime[0] += TimerOff();
 
         TimerOn();
         // d_i <- R_i^g_(i, R)(q)
         open_multipoly(proof->D, pp, gR[i], pp->q, i);
-        RunTime[3] = TimerOff();
+        RunTime[2] = TimerOff();
         
         TimerOn();
         // y[i] += g_(i, R)[j]*z^j
@@ -295,6 +297,7 @@ int Open(_struct_proof_ *proof, _struct_polynomial_pp_* pp, _struct_commit_* cm,
     fmpz_set(proof->gx, gX.Fx[0]);
 
     TimerOn();
+
     // make l prime using proof->D
     Hprime_func(l_prime, proof->D, proof->n, cm->C);
     // input (G, g벡터, r벡터), CD, (f(q)벡터, g(q)벡터)

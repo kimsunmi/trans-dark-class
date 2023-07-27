@@ -50,7 +50,7 @@ int main(int argc, char *argv[])
     // G*g
     // g^q
     TimerOn();
-    for(int i = 1; i < 10000; i++){
+    for(int i = 1; i < 1000; i++){
         qfb_nucomp(tmp_g, class_g, class_pp.cm_pp.g, class_pp.cm_pp.G, class_pp.cm_pp.L);
         qfb_reduce(tmp_g, tmp_g, class_pp.cm_pp.G);
         //qfb_nucomp(class_g, class_g, class_pp.cm_pp.g, class_pp.cm_pp.G, class_pp.cm_pp.L);
@@ -60,15 +60,15 @@ int main(int argc, char *argv[])
 
     printf("\n");
     qfb_set(pre_table[0], class_pp.cm_pp.g);
-    // qbit = 128*(2*class_pp.n + 1)+1;
-	// fmpz_setbit(q, qbit); // set qbit with pp->q
+    qbit = 128*(2*class_pp.n + 1)+1;
+	fmpz_setbit(class_pp.q, qbit); // set qbit with pp->q
 
     // fmpz_setbit(q, 1);
     // fmpz_print(q);
     // printf("\n\n");
 
     TimerOn();
-    for(int j=1; j < 10000; j++)
+    for(int j=1; j < 1000; j++)
     {
         qfb_pow_with_root(tmp_g, class_pp.cm_pp.g, class_pp.cm_pp.G, class_pp.q , class_pp.cm_pp.L); 
         qfb_reduce(tmp_g, tmp_g, class_pp.cm_pp.G);

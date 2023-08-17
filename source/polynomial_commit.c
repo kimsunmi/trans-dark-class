@@ -148,13 +148,17 @@ int commit_clear(_struct_commit_* cm){
 // open 시 compute r
 int pokRep_open_precom(_struct_open_* open, _struct_commit_* cm, const _struct_pp_* pp, const fmpz_t l, const _struct_poly_* poly, const fmpz_t q, int index)
 {
-	int numbits = fmpz_bits(q)-1;	
+	int numbits = fmpz_bits(q)-1;
 	int flag = 1, i = 0, j = 0, cnt = 0;
 	fmpz_t bn_tmp1;
 	fmpz_t bn_tmp2;
 	fmpz_t bn_tmp3;
 	fmpz_t bn_dv;
+	fmpz_t div_bn_dv;
+	fmpz_t mod_bn_dv;
+	qfb_t Q_pow;
 	fmpz_t bn_rem;
+	fmpz_t q_bit;
 	_struct_commit_ cm_tmp;
 	commit_init(&cm_tmp);
 
@@ -162,6 +166,10 @@ int pokRep_open_precom(_struct_open_* open, _struct_commit_* cm, const _struct_p
 	fmpz_init(bn_tmp2);
 	fmpz_init(bn_tmp3);
 	fmpz_init(bn_dv);
+	fmpz_init(div_bn_dv);
+	fmpz_init(mod_bn_dv);
+
+	qfb_init(Q_pow);
 	fmpz_init(bn_rem);	
 
 	TimerOn2(before);
@@ -195,17 +203,49 @@ int pokRep_open_precom(_struct_open_* open, _struct_commit_* cm, const _struct_p
 	// f(q) / 1 - 몫: bn_dv, 나머지: bn_rem
 	fmpz_tdiv_qr(bn_dv, bn_rem, bn_tmp1, l);
 	fmpz_set(open->r, bn_rem);
-
 	int num_threads = 1;
+
 	RunTime[2] += TimerOff2(before+2, after+2);
 
 	if(num_threads == 1)
 	{
 		TimerOn2(before+3);
 		// Q <- G_1^(bn_dv) mod G
-		// fmpz_powm(open->Q,	pp->g, bn_dv, pp->G); 
-		qfb_pow_with_root(open->Q, pp->g, pp->G, bn_dv, pp->L);
-		qfb_reduce(open->Q,open->Q,pp->G);
+		// fmpz_powm(open->Q,pp->g, bn_dv, pp->G); 
+		// squre and multifly -> bit로 쪼개서 구하기~
+
+		// precomputation table 을 포함해서 square and multifly
+
+		// pow_num: 지수승
+		// Q_pow: 지수승한 g
+		// Q_mul: 지수승한 g를 곱셈 연산함. 초기는 1로 설정.
+		// n: q의 지수
+		// q를 2689 이상으로 다시 setting
+		// mod 연산 or masking 확인 <- 속도가 빠름
+
+		int n = 0; // q진법의 index
+		fmpz_init_set_ui(q_bit, numbits);
+
+		fmpz_tdiv_r_2exp(mod_bn_dv, bn_dv, q_bit);
+		qfb_pow_with_root(Q_pow, pre_table[index+1][n], pp->G, mod_bn_dv, pp->L);
+		qfb_reduce(Q_pow, Q_pow, pp->G);
+		fmpz_tdiv_q_2exp(bn_dv, bn_dv, q_bit);
+		qfb_set(open->Q, Q_pow);
+		n++;
+
+		for(i = n; i < poly->d ; i++){
+			fmpz_tdiv_r_2exp(mod_bn_dv, bn_dv, q_bit);
+			qfb_pow_with_root(Q_pow, pre_table[index+1][i], pp->G, mod_bn_dv, pp->L);
+			qfb_reduce(Q_pow, Q_pow, pp->G);
+			fmpz_tdiv_q_2exp(bn_dv, bn_dv, q_bit);
+			qfb_nucomp(open->Q, open->Q, Q_pow, pp->G, pp->L);
+			qfb_reduce(open->Q, open->Q, pp->G);
+			// printf("-------while---------\n");
+		}
+
+		qfb_pow_with_root(Q_pow, pre_table[index+1][poly->d], pp->G, bn_dv, pp->L);
+		// qfb_pow_with_root(open->Q, pp->g, pp->G, bn_dv, pp->L);
+		// qfb_reduce(open->Q, open->Q,pp->G);
 		RunTime[3] += TimerOff2(before+3, after+3);	
 	}
 	else

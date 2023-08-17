@@ -30,6 +30,7 @@ int main(int argc, char *argv[])
 	// setup G(group), generater g vector number of polynomials Fx
     pokRep_setup(&pp, security_level, m, D, &poly);
 	printf("d_bit %d d-%d q-%d\n", LOG_D, D, (int)fmpz_bits(pp.q)-1);
+	// fmpz_print(pp.q);
     RunTime = TimerOff();
 	
 	printf("KeyGen_Time %12llu [us]\n", RunTime);

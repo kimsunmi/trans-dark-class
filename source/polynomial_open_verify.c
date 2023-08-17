@@ -34,6 +34,7 @@ int pokRep_setup(_struct_polynomial_pp_* pp, const int lamda, const int m, const
 	BN_set_word(bn_3, 3);
     
     pp->n = ceil(log2(d));
+    printf("n: %d || d: %d\n", pp->n, d);
     pp->d = d;
 
     // pp->p 128비트 random prime 생성
@@ -57,8 +58,9 @@ int pokRep_setup(_struct_polynomial_pp_* pp, const int lamda, const int m, const
     // q range 범위 변경 128
     // trans-dark: qbit = 128*(2*pp->n + 1)+1;
 
-    qbit = 128*(2*pp->n + 1)+1; 
+    qbit = 128*(2*pp->n + 1)+1;
 
+    printf("qbit: %d\n", qbit);
     // set b <- {(p - 1)+(m - 1)(p - 1)^2}p^n
     fmpz_sub_ui(pp->b, pp->p, 1);
     fmpz_pow_ui(fmpz_tmp, pp->p, (pp->n));
@@ -146,9 +148,12 @@ int pokRep_open(fmpz_t r, fmpz_t s[], qfb_t Q, const fmpz_t l, const _struct_pol
 
     // s, Q계산
     for(int i=0 ; i < pp->n ; i++){
+        printf("\n---------%d번째 R--------\n", i);
         fmpz_init(s[i]);
         // fmpz_set(pp_tmp.g, pp->R[i]);
         qfb_set(pp_tmp.g,pp->R[i]);
+        //qfb_print(pp->R[i]);
+
         pokRep_open_precom(&open, &cm, &pp_tmp, l, &(*g)[i], q, i);
         fmpz_set(s[i], open.r);
         fmpz_mod(s[i], s[i], l);

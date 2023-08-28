@@ -59,7 +59,6 @@ int pokRep_setup(_struct_polynomial_pp_* pp, const int lamda, const int m, const
     // trans-dark: qbit = 128*(2*pp->n + 1)+1;
 
     qbit = 128*(2*pp->n + 1)+1;
-
     printf("qbit: %d\n", qbit);
     // set b <- {(p - 1)+(m - 1)(p - 1)^2}p^n
     fmpz_sub_ui(pp->b, pp->p, 1);
@@ -148,7 +147,6 @@ int pokRep_open(fmpz_t r, fmpz_t s[], qfb_t Q, const fmpz_t l, const _struct_pol
 
     // s, Q계산
     for(int i=0 ; i < pp->n ; i++){
-        printf("\n---------%d번째 R--------\n", i);
         fmpz_init(s[i]);
         // fmpz_set(pp_tmp.g, pp->R[i]);
         qfb_set(pp_tmp.g,pp->R[i]);
@@ -283,15 +281,6 @@ int Open(_struct_proof_ *proof, _struct_polynomial_pp_* pp, _struct_commit_* cm,
         for(j=0;j<d;j++){
             fmpz_mul(fmpz_tmp2, alphaI, gR[i].Fx[j]); // alphaI * g_{i,R}
             fmpz_add(gX.Fx[j], gL.Fx[j], fmpz_tmp2); // g_(i+1) <- g_(i, L) + alpha_i * g_(i, R)
-
-            // printf("\ni:%d j: %d", i, j); 
-            // printf("\nalpha "); fmpz_print(alphaI);
-            // printf("\ngX_x "); fmpz_print(gX.Fx[j]);
-            // printf("\nfmpz_tmp2 "); fmpz_print(fmpz_tmp2);
-            // printf("\nj: %d gL_x:  ", j);
-			// fmpz_print(gL.Fx[j]);
-            // printf("\n gR_x:  "); fmpz_print(gR[i].Fx[j]);
-            // printf("\n gX_x:  "); fmpz_print(gX.Fx[j]);
         }
     }
     RunTime[0] += TimerOff();

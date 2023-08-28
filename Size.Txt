@@ -58,3 +58,12 @@ Txt/proof.txt 1496
 Txt/pp.txt 2322
 Txt/commit.txt 196
 Txt/proof.txt 3358
+Txt/pp.txt 1151
+Txt/commit.txt 196
+Txt/proof.txt 1495
+Txt/pp.txt 2322
+Txt/commit.txt 195
+Txt/proof.txt 3358
+Txt/pp.txt 1152
+Txt/commit.txt 194
+Txt/proof.txt 1498

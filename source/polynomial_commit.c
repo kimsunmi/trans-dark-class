@@ -86,11 +86,6 @@ int commit_precompute(_struct_commit_* cm, const _struct_pp_ pp, const _struct_p
 
 		for(i = 0; i < poly.d; i++)
 		{
-			// printf("\npre_table[%d][%d] ", index+1, i);
-			// qfb_print(pre_table[index+1][i]);
-			// printf("\nidx: %d poly.Fx[%d]: ", index+1, i);
-			// fmpz_print(poly.Fx[i]);
-			
 			qfb_pow_with_root(qfb_tmp, pre_table[index+1][i], pp.G, poly.Fx[i], pp.L);
 			qfb_reduce(qfb_tmp, qfb_tmp, pp.G);
 			qfb_nucomp(cm->C, cm->C, qfb_tmp, pp.G, pp.L);
@@ -211,17 +206,6 @@ int pokRep_open_precom(_struct_open_* open, _struct_commit_* cm, const _struct_p
 	{
 		TimerOn2(before+3);
 		// Q <- G_1^(bn_dv) mod G
-		// fmpz_powm(open->Q,pp->g, bn_dv, pp->G); 
-		// squre and multifly -> bit로 쪼개서 구하기~
-
-		// precomputation table 을 포함해서 square and multifly
-
-		// pow_num: 지수승
-		// Q_pow: 지수승한 g
-		// Q_mul: 지수승한 g를 곱셈 연산함. 초기는 1로 설정.
-		// n: q의 지수
-		// q를 2689 이상으로 다시 setting
-		// mod 연산 or masking 확인 <- 속도가 빠름
 
 		int n = 0; // q진법의 index
 		fmpz_init_set_ui(q_bit, numbits);
@@ -240,12 +224,10 @@ int pokRep_open_precom(_struct_open_* open, _struct_commit_* cm, const _struct_p
 			fmpz_tdiv_q_2exp(bn_dv, bn_dv, q_bit);
 			qfb_nucomp(open->Q, open->Q, Q_pow, pp->G, pp->L);
 			qfb_reduce(open->Q, open->Q, pp->G);
-			// printf("-------while---------\n");
 		}
 
-		qfb_pow_with_root(Q_pow, pre_table[index+1][poly->d], pp->G, bn_dv, pp->L);
-		// qfb_pow_with_root(open->Q, pp->g, pp->G, bn_dv, pp->L);
-		// qfb_reduce(open->Q, open->Q,pp->G);
+		// qfb_pow_with_root(Q_pow, pre_table[index+1][poly->d], pp->G, bn_dv, pp->L);
+
 		RunTime[3] += TimerOff2(before+3, after+3);	
 	}
 	else

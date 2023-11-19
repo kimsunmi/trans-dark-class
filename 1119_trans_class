@@ -1,0 +1,144 @@
+
+================ compile w/ optimization option -O2 ================
+================ test n = 7 ================
+SETUP....
+n: 7 || d: 128
+qbit: 1921
+d_bit 7 d-128 q-1921
+KeyGen_Time        13971 [us]
+parameter size 5742
+KeyGen_I/O_           26 [us]
+
+OPEN....
+Start precomputation
+Commit__PRE_Table      2076487 [us]
+Commit_with_Precompute_Table        29540 [us]
+Commit_NEW_      1071035 [us]
+Commit_I/O_          353 [us]
+r [0]         122
+g(i,r)(q) [1]         248
+r= x mod l [2]          80
+/////////////
+Q [3]    16572287
+__Poly_Open_for         1505 [us]
+__Poly_Open_PokRep     16573047 [us]
+__Poly_Open_D_i        11975 [us]
+
+__Poly_Open     16574552 [us]
+proof size 9519
+__Open_I/O_          544 [us]
+
+VERIFY....
+pokrep result>> 1
+g =? s_i>> 1
+g =? y_i>> 1
+|g| < b >> 1
+PoKReP_verify [0]       17967
+verify for [1]          48
+Poly_Verify        19310 [us]
+Verify_I/O_          333 [us]
+Verify Result [1]
+
+================ test n = 8 ================
+SETUP....
+n: 8 || d: 256
+qbit: 2177
+d_bit 8 d-256 q-2177
+KeyGen_Time       113847 [us]
+parameter size 6368
+KeyGen_I/O_           30 [us]
+
+OPEN....
+Start precomputation
+Commit__PRE_Table      4547078 [us]
+Commit_with_Precompute_Table        56877 [us]
+Commit_NEW_      2373489 [us]
+Commit_I/O_          388 [us]
+r [0]         494
+g(i,r)(q) [1]         461
+r= x mod l [2]         210
+/////////////
+Q [3]    37964752
+__Poly_Open_for         1429 [us]
+__Poly_Open_PokRep     37966377 [us]
+__Poly_Open_D_i        12560 [us]
+
+__Poly_Open     37967806 [us]
+proof size 10719
+__Open_I/O_          528 [us]
+
+VERIFY....
+pokrep result>> 1
+g =? s_i>> 1
+g =? y_i>> 1
+|g| < b >> 1
+PoKReP_verify [0]       19070
+verify for [1]          50
+Poly_Verify        20514 [us]
+Verify_I/O_          319 [us]
+Verify Result [1]
+
+================ test n = 9 ================
+SETUP....
+n: 9 || d: 512
+qbit: 2433
+d_bit 9 d-512 q-2433
+KeyGen_Time       205170 [us]
+parameter size 7018
+KeyGen_I/O_           67 [us]
+
+OPEN....
+Start precomputation
+Commit__PRE_Table     10353408 [us]
+Commit_with_Precompute_Table       109578 [us]
+Commit_NEW_      5288138 [us]
+Commit_I/O_          704 [us]
+r [0]        2278
+g(i,r)(q) [1]        1019
+r= x mod l [2]         542
+/////////////
+Q [3]    82045744
+__Poly_Open_for         1627 [us]
+__Poly_Open_PokRep     82050225 [us]
+__Poly_Open_D_i        15399 [us]
+
+__Poly_Open     82051852 [us]
+proof size 11889
+__Open_I/O_          940 [us]
+
+VERIFY....
+pokrep result>> 1
+g =? s_i>> 1
+g =? y_i>> 1
+|g| < b >> 1
+PoKReP_verify [0]       17782
+verify for [1]          48
+Poly_Verify        19658 [us]
+Verify_I/O_          544 [us]
+Verify Result [1]
+================ test n = 10================
+smkim@LAPTOP-smkim:~/transparant_zKsnark_class$ ./TRANS_Setup 512 10
+n: 10 || d: 1024
+qbit: 2689
+d_bit 10 d-1024 q-2689
+KeyGen_Time       127973 [us]
+parameter size 7651
+KeyGen_I/O_           91 [us]
+smkim@LAPTOP-smkim:~/transparant_zKsnark_class$ ./TRANS_Open 
+Start precomputation
+Commit__PRE_Table     24082225 [us]
+Commit_with_Precompute_Table       216277 [us]
+Commit_NEW_     11474489 [us]
+Commit_I/O_          812 [us]
+r [0]       10428
+g(i,r)(q) [1]        2058
+r= x mod l [2]        1258
+/////////////
+Q [3]   197030434
+__Poly_Open_for         1825 [us]
+__Poly_Open_PokRep    197044819 [us]
+__Poly_Open_D_i        15811 [us]
+
+__Poly_Open    197046644 [us]
+proof size 13112
+__Open_I/O_         1006 [us]

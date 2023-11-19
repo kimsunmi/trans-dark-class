@@ -55,7 +55,7 @@ int pokRep_setup(_struct_polynomial_pp_* pp, const int lamda, const int m, const
         fmpz_mod(poly->fz, poly->fz, pp->p);
     }
 
-    // q range 범위 변경 128
+    // q range 2µ(λ + 1) + 1
     // trans-dark: qbit = 128*(2*pp->n + 1)+1;
 
     qbit = 128*(2*pp->n + 1)+1;
@@ -76,7 +76,6 @@ int pokRep_setup(_struct_polynomial_pp_* pp, const int lamda, const int m, const
     fmpz_one(fmpz_tmp);
     pp->R = (qfb_t*)malloc(sizeof(qfb_t) * pp->n);
     
-    // 23.05 pp->cm_pp.g와 동일하게 뽑기
     for(int i=0 ; i < pp->n; i++) {
         qfb_init(pp->R[i]);
         do{
@@ -105,6 +104,9 @@ int open_multipoly(qfb_t* D, const _struct_polynomial_pp_* pp, const _struct_pol
     fmpz_init_set(pp_tmp.G, pp->cm_pp.G);
     qfb_init(pp_tmp.g);
     fmpz_init(pp_tmp.L);
+    fmpz_set(pp_tmp.L,pp->cm_pp.L);
+    // fmpz_abs(pp_tmp.L, pp->cm_pp.G);
+	// fmpz_root(pp_tmp.L, pp_tmp.L, 4);
     qfb_set(pp_tmp.g, pp->R[i]);
 
     // index i에 대해서만 d_i <- R_i^g_(i, R)(q) 계산 
@@ -135,7 +137,8 @@ int pokRep_open(fmpz_t r, fmpz_t s[], qfb_t Q, const fmpz_t l, const _struct_pol
     qfb_principal_form(Q,pp->cm_pp.G); // set Q to 1
 
     fmpz_init(pp_tmp.L);
-    fmpz_init(pp->cm_pp.L);
+    fmpz_set(pp_tmp.L, pp->cm_pp.L);
+    
 
     pokRep_open_precom(&open, &cm, &pp_tmp, l, f, q, -1); // compute r ← x_1 mod ℓ, Q
     fmpz_set(r, open.r); 
@@ -258,14 +261,17 @@ int Open(_struct_proof_ *proof, _struct_polynomial_pp_* pp, _struct_commit_* cm,
             fmpz_set(gL.Fx[j], gX.Fx[j]); // g_(i, L): g_i 왼쪽 부분 자르기
             fmpz_set(gR[i].Fx[j], gX.Fx[d + j]); // g_(i, R): g_i 나머지 부분 자르기 
         }
-        RunTime[0] += TimerOff();
+        // 추가
+        // RunTime[0] += TimerOff(); 
 
-        TimerOn();
+        // 추가
+        // TimerOn();
         // d_i <- R_i^g_(i, R)(q)
         open_multipoly(proof->D, pp, gR[i], pp->q, i);
-        RunTime[2] = TimerOff();
-        
-        TimerOn();
+        // 추가
+        // RunTime[2] = TimerOff();
+        // 추가
+        // TimerOn();
         // y[i] += g_(i, R)[j]*z^j
         for(j=0;j<d;j++){
             fmpz_powm_ui(fmpz_tmp1, poly->z, j, pp->p); // z^j mod p
@@ -283,9 +289,9 @@ int Open(_struct_proof_ *proof, _struct_polynomial_pp_* pp, _struct_commit_* cm,
             fmpz_add(gX.Fx[j], gL.Fx[j], fmpz_tmp2); // g_(i+1) <- g_(i, L) + alpha_i * g_(i, R)
         }
     }
-    RunTime[0] += TimerOff();
-    (*pRuntime) += RunTime[0];
-    
+    // RunTime[0] += TimerOff();
+    // (*pRuntime) += RunTime[0];
+    (*pRuntime) += TimerOff();
     
     // 최종 상수항
     fmpz_set(proof->gx, gX.Fx[0]);
@@ -297,12 +303,13 @@ int Open(_struct_proof_ *proof, _struct_polynomial_pp_* pp, _struct_commit_* cm,
     // input (G, g벡터, r벡터), CD, (f(q)벡터, g(q)벡터)
     pokRep_open(proof->r, proof->s, proof->Q, l_prime, pp, pp->q, &gR, poly);
 
-    RunTime[1] += TimerOff();
-    (*pRuntime) += RunTime[1];
+    // RunTime[1] += TimerOff();
+    // (*pRuntime) += RunTime[1];
+    OPEN_RUNTIME += TimerOff();
 
-    printf("__Poly_Open_for %12llu [us]\n", RunTime[0]);
-    printf("__Poly_Open_PokRep %12llu [us]\n", RunTime[1]);
-    printf("__Poly_Open_D_i %12llu [us]\n", RunTime[2]);
+    // printf("__Poly_Open_for %12llu [us]\n", RunTime[0]);
+    // printf("__Poly_Open_PokRep %12llu [us]\n", RunTime[1]);
+    // printf("__Poly_Open_D_i %12llu [us]\n", RunTime[2]);
 
     fmpz_clear(fmpz_tmp1);
     fmpz_clear(fmpz_tmp2);

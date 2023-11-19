@@ -46,14 +46,14 @@ int start_precomputation(_struct_polynomial_pp_* pp, const _struct_poly_ poly)
 			for(j=1; (j < d); j++){
 				
 				qfb_init(pre_table[i][j]);
-				qfb_pow_with_root(pre_table[i][j], pre_table[i][j-1], pp->cm_pp.G, pp->q, pp->cm_pp.L); // pow.c
+				qfb_pow_with_root(pre_table[i][j], pre_table[i][j-1], pp->cm_pp.G, pp->q, pp->cm_pp.L); 
 				qfb_reduce(pre_table[i][j], pre_table[i][j], pp->cm_pp.G);
 			}
 		}
 		for(j=1; j<poly.d; j++)
 		{
 			qfb_init(pre_table[0][j]);
-			qfb_pow_with_root(pre_table[0][j], pre_table[0][j-1], pp->cm_pp.G, pp->q, pp->cm_pp.L); // pow.c
+			qfb_pow_with_root(pre_table[0][j], pre_table[0][j-1], pp->cm_pp.G, pp->q, pp->cm_pp.L);
 			qfb_reduce(pre_table[0][j], pre_table[0][j], pp->cm_pp.G);
 		}
 		RunTime1 = TimerOff();
@@ -75,11 +75,11 @@ int commit_precompute(_struct_commit_* cm, const _struct_pp_ pp, const _struct_p
 	static int isfirst = 1;
 	int flag = 1, i = 0, j=0;
 	int n = ceil(log(poly.d));
-	
-	if(isprecomputed){
-		qfb_t qfb_tmp;
+	qfb_t qfb_tmp;
 
-		qfb_init(qfb_tmp);
+	qfb_init(qfb_tmp);
+	if(isprecomputed){
+
 		qfb_principal_form(cm->C, pp.G);
 		// [{pre_table[0][0]^Fx[0] (mod G)}*...*{pre_table[0][d]^Fx[d] (mod G)}](mod G)
 		// product g_i^Fx_i from i = 1 to d 
@@ -94,7 +94,6 @@ int commit_precompute(_struct_commit_* cm, const _struct_pp_ pp, const _struct_p
 
 		qfb_clear(qfb_tmp);
 
-
 	}
 	else
 	{
@@ -103,20 +102,27 @@ int commit_precompute(_struct_commit_* cm, const _struct_pp_ pp, const _struct_p
 			printf("Need precomputation\n");
 			isfirst = 0;
 		}
+
+		for(i = poly.d - 1; i >= 0; i--)
+		{
+			qfb_pow_with_root(cm->C,cm->C,pp.G,q,pp.L);
+			qfb_reduce(cm->C,cm->C,pp.G);
+			qfb_pow_with_root(qfb_tmp, pp.g, pp.G, poly.Fx[i],pp.L);
+			qfb_nucomp(cm->C, cm->C, qfb_tmp, pp.G, pp.L);
+			qfb_reduce(cm->C, cm->C, pp.G);
+		}
 	}
 	return flag;
 }
 
 int commit_new(_struct_commit_* cm, const _struct_polynomial_pp_* pp, const _struct_poly_ poly, const fmpz_t q)
 {
-	int i=0, j=0;
-	int flag = 1;
+	int i=0, flag = 1;
 	qfb_t qfb_tmp;
 
 	qfb_init(qfb_tmp);
-
 	qfb_principal_form(cm->C, pp->cm_pp.G); 
-	qfb_principal_form(qfb_tmp, pp->cm_pp.G);
+	
 	for(i = poly.d - 1; i >= 0; i--)
 	{
 		qfb_pow_with_root(cm->C,cm->C,pp->cm_pp.G,pp->q,pp->cm_pp.L);
@@ -218,7 +224,7 @@ int pokRep_open_precom(_struct_open_* open, _struct_commit_* cm, const _struct_p
 		n++;
 
 		for(i = n; i < poly->d ; i++){
-			fmpz_tdiv_r_2exp(mod_bn_dv, bn_dv, q_bit);
+			fmpz_tdiv_r_2exp(mod_bn_dv, bn_dv, q_bit); //BN_rshift1(bn_dv,q_bit);
 			qfb_pow_with_root(Q_pow, pre_table[index+1][i], pp->G, mod_bn_dv, pp->L);
 			qfb_reduce(Q_pow, Q_pow, pp->G);
 			fmpz_tdiv_q_2exp(bn_dv, bn_dv, q_bit);
@@ -227,8 +233,15 @@ int pokRep_open_precom(_struct_open_* open, _struct_commit_* cm, const _struct_p
 		}
 
 		// qfb_pow_with_root(Q_pow, pre_table[index+1][poly->d], pp->G, bn_dv, pp->L);
-
 		RunTime[3] += TimerOff2(before+3, after+3);	
+		if(poly->d == 1)
+			{
+				printf("r [0]%12llu\n", RunTime[0]);
+				printf("g(i,r)(q) [1]%12llu\n", RunTime[1]);
+				printf("r= x mod l [2]%12llu\n", RunTime[2]);
+				printf("/////////////\n");
+				printf("Q [3]%12llu\n", RunTime[3]);
+			}
 	}
 	else
 	{

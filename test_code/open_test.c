@@ -26,9 +26,6 @@ int main(int argc, char *argv[])
 
 	TimerOn();
     Read_pp(&pp);
-    // printf("\ncm p: ");
-    // fmpz_print(pp.q);
-    // printf("\n");
     Read_poly(&poly);
     RunTime_IO = TimerOff();
 

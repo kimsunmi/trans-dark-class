@@ -1,0 +1,317 @@
+
+================ compile w/ optimization option -O2 ================
+================ test n = 7 ================
+SETUP....
+n: 7 || d: 128
+qbit: 1921
+d_bit 7 d-128 q-1921
+KeyGen_Time       180052 [us]
+parameter size 5740
+KeyGen_I/O_           19 [us]
+
+OPEN....
+Start precomputation
+PRE_COMPUTE_g      1053755 [us]
+PRE_COMPUTE_(r_i + g)      2192678 [us]
+Commit_with_Precompute_Table        25828 [us]
+Commit_NEW_      1076318 [us]
+Commit_I/O_          366 [us]
+
+POKREP start
+    __Open_pokRep_r      1876774 total:      1876774 [us]
+    __Open_pokRep_r_0       875827 total:      2752601 [us]
+    __Open_pokRep_r_1       420029 total:      3172630 [us]
+    __Open_pokRep_r_2       198624 total:      3371254 [us]
+    __Open_pokRep_r_3        97060 total:      3468314 [us]
+    __Open_pokRep_r_4        40771 total:      3509085 [us]
+    __Open_pokRep_r_5        12509 total:      3521594 [us]
+//////// d_ = 1 /////////
+f(q):          122
+g(i,r)(q):          278
+r = f(q) mod l:           98
+Q = G_1^(bn_dv) mod G:      3521925
+/////////////////////////
+    __Open_pokRep_r_6          915 total:      3522509 [us]
+__Poly_Open_pokReP total:      3522509 [us]
+__Poly_Open_D_i        81913 [us]
+
+__Poly_Open      4017689 [us]
+proof size 9506
+__Open_I/O_          460 [us]
+
+VERIFY....
+pokrep result>> 1
+g =? s_i>> 1
+g =? y_i>> 1
+|g| < b >> 1
+PoKReP_verify [0]       17022
+verify for [1]          45
+Poly_Verify        18556 [us]
+Verify_I/O_          301 [us]
+Verify Result [1]
+
+================ test n = 8 ================
+SETUP....
+n: 8 || d: 256
+qbit: 2177
+d_bit 8 d-256 q-2177
+KeyGen_Time       208061 [us]
+parameter size 6373
+KeyGen_I/O_           29 [us]
+
+OPEN....
+Start precomputation
+PRE_COMPUTE_g      3342878 [us]
+PRE_COMPUTE_(r_i + g)      6143223 [us]
+Commit_with_Precompute_Table        50512 [us]
+Commit_NEW_      2393995 [us]
+Commit_I/O_          515 [us]
+
+POKREP start
+    __Open_pokRep_r      5968176 total:      5968176 [us]
+    __Open_pokRep_r_0      2065881 total:      8034057 [us]
+    __Open_pokRep_r_1      1092716 total:      9126773 [us]
+    __Open_pokRep_r_2       480341 total:      9607114 [us]
+    __Open_pokRep_r_3       227000 total:      9834114 [us]
+    __Open_pokRep_r_4       110997 total:      9945111 [us]
+    __Open_pokRep_r_5        42782 total:      9987893 [us]
+    __Open_pokRep_r_6        15043 total:     10002936 [us]
+//////// d_ = 1 /////////
+f(q):          626
+g(i,r)(q):          466
+r = f(q) mod l:          251
+Q = G_1^(bn_dv) mod G:     10002889
+/////////////////////////
+    __Open_pokRep_r_7         1368 total:     10004304 [us]
+__Poly_Open_pokReP total:     10004304 [us]
+__Poly_Open_D_i       156830 [us]
+
+__Poly_Open     11069265 [us]
+proof size 10717
+__Open_I/O_          672 [us]
+
+VERIFY....
+pokrep result>> 1
+g =? s_i>> 1
+g =? y_i>> 1
+|g| < b >> 1
+PoKReP_verify [0]       19062
+verify for [1]          70
+Poly_Verify        20578 [us]
+Verify_I/O_          333 [us]
+Verify Result [1]
+
+================ test n = 9 ================
+SETUP....
+n: 9 || d: 512
+qbit: 2433
+d_bit 9 d-512 q-2433
+KeyGen_Time        41305 [us]
+parameter size 7000
+KeyGen_I/O_           32 [us]
+
+OPEN....
+Start precomputation
+PRE_COMPUTE_g      6438817 [us]
+PRE_COMPUTE_(r_i + g)     11567546 [us]
+Commit_with_Precompute_Table       170909 [us]
+Commit_NEW_      5533573 [us]
+Commit_I/O_          518 [us]
+
+POKREP start
+    __Open_pokRep_r     13569730 total:     13569730 [us]
+    __Open_pokRep_r_0      5130442 total:     18700172 [us]
+    __Open_pokRep_r_1      2625380 total:     21325552 [us]
+    __Open_pokRep_r_2      1743913 total:     23069465 [us]
+    __Open_pokRep_r_3       818016 total:     23887481 [us]
+    __Open_pokRep_r_4       390554 total:     24278035 [us]
+    __Open_pokRep_r_5       180161 total:     24458196 [us]
+    __Open_pokRep_r_6        78835 total:     24537031 [us]
+    __Open_pokRep_r_7        28474 total:     24565505 [us]
+//////// d_ = 1 /////////
+f(q):         2203
+g(i,r)(q):         1087
+r = f(q) mod l:          493
+Q = G_1^(bn_dv) mod G:     24564461
+/////////////////////////
+    __Open_pokRep_r_8         2910 total:     24568415 [us]
+__Poly_Open_pokReP total:     24568415 [us]
+__Poly_Open_D_i       327956 [us]
+
+__Poly_Open     27108653 [us]
+proof size 11878
+__Open_I/O_          732 [us]
+
+VERIFY....
+pokrep result>> 1
+g =? s_i>> 1
+g =? y_i>> 1
+|g| < b >> 1
+PoKReP_verify [0]       29972
+verify for [1]          94
+Poly_Verify        32274 [us]
+Verify_I/O_          407 [us]
+Verify Result [1]
+
+================ test n = 10 ================
+SETUP....
+n: 10 || d: 1024
+qbit: 2689
+d_bit 10 d-1024 q-2689
+KeyGen_Time        89601 [us]
+parameter size 7656
+KeyGen_I/O_           46 [us]
+
+OPEN....
+Start precomputation
+PRE_COMPUTE_g     13156326 [us]
+PRE_COMPUTE_(r_i + g)     24714791 [us]
+Commit_with_Precompute_Table       220834 [us]
+Commit_NEW_     13408779 [us]
+Commit_I/O_          606 [us]
+
+POKREP start
+    __Open_pokRep_r     42794094 total:     42794094 [us]
+    __Open_pokRep_r_0     17014624 total:     59808718 [us]
+    __Open_pokRep_r_1      7065761 total:     66874479 [us]
+    __Open_pokRep_r_2      2884065 total:     69758544 [us]
+    __Open_pokRep_r_3      1252495 total:     71011039 [us]
+    __Open_pokRep_r_4       573405 total:     71584444 [us]
+    __Open_pokRep_r_5       281753 total:     71866197 [us]
+    __Open_pokRep_r_6       129351 total:     71995548 [us]
+    __Open_pokRep_r_7        55131 total:     72050679 [us]
+    __Open_pokRep_r_8        20446 total:     72071125 [us]
+//////// d_ = 1 /////////
+f(q):        13279
+g(i,r)(q):         2197
+r = f(q) mod l:         1405
+Q = G_1^(bn_dv) mod G:     72056459
+/////////////////////////
+    __Open_pokRep_r_9         2356 total:     72073481 [us]
+__Poly_Open_pokReP total:     72073481 [us]
+__Poly_Open_D_i       920247 [us]
+
+__Poly_Open     79926334 [us]
+proof size 13121
+__Open_I/O_          772 [us]
+
+VERIFY....
+pokrep result>> 1
+g =? s_i>> 1
+g =? y_i>> 1
+|g| < b >> 1
+PoKReP_verify [0]       22246
+verify for [1]          58
+Poly_Verify        23835 [us]
+Verify_I/O_          425 [us]
+Verify Result [1]
+
+================ test n = 11 ================
+SETUP....
+n: 11 || d: 2048
+qbit: 2945
+d_bit 11 d-2048 q-2945
+KeyGen_Time        37149 [us]
+parameter size 8290
+KeyGen_I/O_           19 [us]
+
+OPEN....
+Start precomputation
+PRE_COMPUTE_g     26238281 [us]
+PRE_COMPUTE_(r_i + g)     51549156 [us]
+Commit_with_Precompute_Table       438431 [us]
+Commit_NEW_     26052016 [us]
+Commit_I/O_          589 [us]
+
+POKREP start
+    __Open_pokRep_r    136219701 total:    136219701 [us]
+    __Open_pokRep_r_0     44310979 total:    180530680 [us]
+    __Open_pokRep_r_1     17745950 total:    198276630 [us]
+    __Open_pokRep_r_2      8088847 total:    206365477 [us]
+    __Open_pokRep_r_3      2930237 total:    209295714 [us]
+    __Open_pokRep_r_4      1386926 total:    210682640 [us]
+    __Open_pokRep_r_5       656065 total:    211338705 [us]
+    __Open_pokRep_r_6       325401 total:    211664106 [us]
+    __Open_pokRep_r_7       152092 total:    211816198 [us]
+    __Open_pokRep_r_8        70907 total:    211887105 [us]
+    __Open_pokRep_r_9        24435 total:    211911540 [us]
+	//////// d_ = 1 /////////
+	f(q):        41102
+	g(i,r)(q):         4305
+	r = f(q) mod l:         2341
+	Q = G_1^(bn_dv) mod G:    211866287
+	/////////////////////////
+    __Open_pokRep_r_10         2746 total:    211914286 [us]
+__Poly_Open_pokReP total:    211914286 [us]
+__Poly_Open_D_i      1346011 [us]
+
+__Poly_Open    225057873 [us]
+proof size 14284
+__Open_I/O_          792 [us]
+
+VERIFY....
+pokrep result>> 1
+g =? s_i>> 1
+g =? y_i>> 1
+|g| < b >> 1
+PoKReP_verify [0]       25645
+verify for [1]          64
+Poly_Verify        26890 [us]
+Verify_I/O_          415 [us]
+Verify Result [1]
+
+
+================ test n = 12 ================
+SETUP....
+n: 12 || d: 4096
+qbit: 3201
+d_bit 12 d-4096 q-3201
+KeyGen_Time        47639 [us]
+parameter size 8923
+KeyGen_I/O_           80 [us]
+
+OPEN....
+Start precomputation
+PRE_COMPUTE_g     60473327 [us]
+PRE_COMPUTE_(r_i + g)    121033769 [us]
+Commit_with_Precompute_Table       927536 [us]
+Commit_NEW_     57868520 [us]
+Commit_I/O_          831 [us]
+
+POKREP start
+    __Open_pokRep_r    576028150 total:    576028150 [us]
+    __Open_pokRep_r_0    161743803 total:    737771953 [us]
+    __Open_pokRep_r_1     53795689 total:    791567642 [us]
+    __Open_pokRep_r_2     19402482 total:    810970124 [us]
+    __Open_pokRep_r_3      7272740 total:    818242864 [us]
+    __Open_pokRep_r_4      3167108 total:    821409972 [us]
+    __Open_pokRep_r_5      1509707 total:    822919679 [us]
+    __Open_pokRep_r_6       708962 total:    823628641 [us]
+    __Open_pokRep_r_7       351316 total:    823979957 [us]
+    __Open_pokRep_r_8       165253 total:    824145210 [us]
+    __Open_pokRep_r_9        74145 total:    824219355 [us]
+    __Open_pokRep_r_10        23006 total:    824242361 [us]
+	//////// d_ = 1 /////////
+	f(q):       172987
+	g(i,r)(q):         8079
+	r = f(q) mod l:         6029
+	Q = G_1^(bn_dv) mod G:    824058312
+	/////////////////////////
+    __Open_pokRep_r_11         3351 total:    824245712 [us]
+__Poly_Open_pokReP total:    824245712 [us]
+__Poly_Open_D_i      2646374 [us]
+
+__Poly_Open    852625292 [us]
+proof size 15519
+__Open_I/O_         1019 [us]
+
+VERIFY....
+pokrep result>> 1
+g =? s_i>> 1
+g =? y_i>> 1
+|g| < b >> 1
+PoKReP_verify [0]       27292
+verify for [1]          63
+Poly_Verify        28766 [us]
+Verify_I/O_          786 [us]
+Verify Result [1]

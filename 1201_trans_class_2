@@ -1,0 +1,412 @@
+
+================ compile w/ optimization option -O2 ================
+================ test n = 7 ================
+SETUP....
+n: 7 || d: 128
+qbit: 1921
+d_bit 7 d-128 q-1921
+KeyGen_Time       221894 [us]
+parameter size 5742
+KeyGen_I/O_           20 [us]
+
+OPEN....
+Start precomputation
+PRE_COMPUTE_g      1146216 [us]
+PRE_COMPUTE_(r_i + g)      2259997 [us]
+Commit_with_Precompute_Table        32296 [us]
+Commit_NEW_      1857348 [us]
+Commit_I/O_          467 [us]
+
+POKREP start
+	//////// d_ = 128 /////////
+	f(q):          134
+	g(i,r)(q):           80
+	r = f(q) mod l:           70
+	Q = G_1^(bn_dv) mod G:      2785875
+	/////////////////////////
+    __Open_pokRep_r      2786166 total:      2786166 [us]
+	//////// d_ = 64 /////////
+	f(q):          154
+	g(i,r)(q):          119
+	r = f(q) mod l:           87
+	Q = G_1^(bn_dv) mod G:      3734136
+	/////////////////////////
+    __Open_pokRep_r_0       948354 total:      3734520 [us]
+	//////// d_ = 32 /////////
+	f(q):          161
+	g(i,r)(q):          182
+	r = f(q) mod l:           97
+	Q = G_1^(bn_dv) mod G:      4203385
+	/////////////////////////
+    __Open_pokRep_r_1       469345 total:      4203865 [us]
+	//////// d_ = 16 /////////
+	f(q):          165
+	g(i,r)(q):          225
+	r = f(q) mod l:          102
+	Q = G_1^(bn_dv) mod G:      4423059
+	/////////////////////////
+    __Open_pokRep_r_2       219741 total:      4423606 [us]
+	//////// d_ = 8 /////////
+	f(q):          167
+	g(i,r)(q):          257
+	r = f(q) mod l:          105
+	Q = G_1^(bn_dv) mod G:      4526389
+	/////////////////////////
+    __Open_pokRep_r_3       103381 total:      4526987 [us]
+	//////// d_ = 4 /////////
+	f(q):          168
+	g(i,r)(q):          273
+	r = f(q) mod l:          106
+	Q = G_1^(bn_dv) mod G:      4571250
+	/////////////////////////
+    __Open_pokRep_r_4        44892 total:      4571879 [us]
+	//////// d_ = 2 /////////
+	f(q):          168
+	g(i,r)(q):          284
+	r = f(q) mod l:          107
+	Q = G_1^(bn_dv) mod G:      4585539
+	/////////////////////////
+    __Open_pokRep_r_5        14316 total:      4586195 [us]
+	//////// d_ = 1 /////////
+	f(q):          168
+	g(i,r)(q):          290
+	r = f(q) mod l:          108
+	Q = G_1^(bn_dv) mod G:      4586668
+	/////////////////////////
+    __Open_pokRep_r_6         1143 total:      4587338 [us]
+__Poly_Open_pokReP total:      4587338 [us]
+__Poly_Open_D_i       126061 [us]
+
+__Poly_Open      5341453 [us]
+proof size 9477
+__Open_I/O_          591 [us]
+
+VERIFY....
+pokrep result>> 1
+g =? s_i>> 1
+g =? y_i>> 1
+|g| < b >> 1
+PoKReP_verify [0]       15566
+verify for [1]          59
+Poly_Verify        16812 [us]
+Verify_I/O_          243 [us]
+Verify Result [1]
+
+================ test n = 8 ================
+SETUP....
+n: 8 || d: 256
+qbit: 2177
+d_bit 8 d-256 q-2177
+KeyGen_Time        87264 [us]
+parameter size 6363
+KeyGen_I/O_           31 [us]
+
+OPEN....
+Start precomputation
+PRE_COMPUTE_g      3665559 [us]
+PRE_COMPUTE_(r_i + g)      6697885 [us]
+Commit_with_Precompute_Table        71124 [us]
+Commit_NEW_      2712611 [us]
+Commit_I/O_          433 [us]
+
+POKREP start
+	//////// d_ = 256 /////////
+	f(q):          333
+	g(i,r)(q):          140
+	r = f(q) mod l:          131
+	Q = G_1^(bn_dv) mod G:      6589297
+	/////////////////////////
+    __Open_pokRep_r      6589909 total:      6589909 [us]
+	//////// d_ = 128 /////////
+	f(q):          413
+	g(i,r)(q):          182
+	r = f(q) mod l:          166
+	Q = G_1^(bn_dv) mod G:      8890547
+	/////////////////////////
+    __Open_pokRep_r_0      2301425 total:      8891334 [us]
+	//////// d_ = 64 /////////
+	f(q):          449
+	g(i,r)(q):          318
+	r = f(q) mod l:          207
+	Q = G_1^(bn_dv) mod G:     10611870
+	/////////////////////////
+    __Open_pokRep_r_1      1721568 total:     10612902 [us]
+	//////// d_ = 32 /////////
+	f(q):          466
+	g(i,r)(q):          463
+	r = f(q) mod l:          237
+	Q = G_1^(bn_dv) mod G:     11425033
+	/////////////////////////
+    __Open_pokRep_r_2       813378 total:     11426280 [us]
+	//////// d_ = 16 /////////
+	f(q):          470
+	g(i,r)(q):          549
+	r = f(q) mod l:          245
+	Q = G_1^(bn_dv) mod G:     11818414
+	/////////////////////////
+    __Open_pokRep_r_3       393501 total:     11819781 [us]
+	//////// d_ = 8 /////////
+	f(q):          473
+	g(i,r)(q):          599
+	r = f(q) mod l:          249
+	Q = G_1^(bn_dv) mod G:     12008552
+	/////////////////////////
+    __Open_pokRep_r_4       190214 total:     12009995 [us]
+	//////// d_ = 4 /////////
+	f(q):          476
+	g(i,r)(q):          628
+	r = f(q) mod l:          252
+	Q = G_1^(bn_dv) mod G:     12082842
+	/////////////////////////
+    __Open_pokRep_r_5        74340 total:     12084335 [us]
+	//////// d_ = 2 /////////
+	f(q):          477
+	g(i,r)(q):          646
+	r = f(q) mod l:          253
+	Q = G_1^(bn_dv) mod G:     12118947
+	/////////////////////////
+    __Open_pokRep_r_6        36141 total:     12120476 [us]
+	//////// d_ = 1 /////////
+	f(q):          477
+	g(i,r)(q):          657
+	r = f(q) mod l:          254
+	Q = G_1^(bn_dv) mod G:     12121686
+	/////////////////////////
+    __Open_pokRep_r_7         2763 total:     12123239 [us]
+__Poly_Open_pokReP total:     12123239 [us]
+__Poly_Open_D_i       178700 [us]
+
+__Poly_Open     13349273 [us]
+proof size 10697
+__Open_I/O_          662 [us]
+
+VERIFY....
+pokrep result>> 1
+g =? s_i>> 1
+g =? y_i>> 1
+|g| < b >> 1
+PoKReP_verify [0]       30053
+verify for [1]         131
+Poly_Verify        31768 [us]
+Verify_I/O_          374 [us]
+Verify Result [1]
+
+================ test n = 9 ================
+SETUP....
+n: 9 || d: 512
+qbit: 2433
+d_bit 9 d-512 q-2433
+KeyGen_Time        27334 [us]
+parameter size 7020
+KeyGen_I/O_           69 [us]
+
+OPEN....
+Start precomputation
+PRE_COMPUTE_g      6581666 [us]
+PRE_COMPUTE_(r_i + g)     13229066 [us]
+Commit_with_Precompute_Table       155833 [us]
+Commit_NEW_      7232997 [us]
+Commit_I/O_          636 [us]
+
+POKREP start
+	//////// d_ = 512 /////////
+	f(q):         1454
+	g(i,r)(q):          213
+	r = f(q) mod l:          228
+	Q = G_1^(bn_dv) mod G:     16146271
+	/////////////////////////
+    __Open_pokRep_r     16148189 total:     16148189 [us]
+	//////// d_ = 256 /////////
+	f(q):         1829
+	g(i,r)(q):          303
+	r = f(q) mod l:          334
+	Q = G_1^(bn_dv) mod G:     23151770
+	/////////////////////////
+    __Open_pokRep_r_0      7006084 total:     23154273 [us]
+	//////// d_ = 128 /////////
+	f(q):         1923
+	g(i,r)(q):          464
+	r = f(q) mod l:          376
+	Q = G_1^(bn_dv) mod G:     25621310
+	/////////////////////////
+    __Open_pokRep_r_1      2469853 total:     25624126 [us]
+	//////// d_ = 64 /////////
+	f(q):         1950
+	g(i,r)(q):          593
+	r = f(q) mod l:          407
+	Q = G_1^(bn_dv) mod G:     27308807
+	/////////////////////////
+    __Open_pokRep_r_2      1687701 total:     27311827 [us]
+	//////// d_ = 32 /////////
+	f(q):         1963
+	g(i,r)(q):          743
+	r = f(q) mod l:          423
+	Q = G_1^(bn_dv) mod G:     28196545
+	/////////////////////////
+    __Open_pokRep_r_3       887935 total:     28199762 [us]
+	//////// d_ = 16 /////////
+	f(q):         1967
+	g(i,r)(q):          840
+	r = f(q) mod l:          431
+	Q = G_1^(bn_dv) mod G:     28620641
+	/////////////////////////
+    __Open_pokRep_r_4       424231 total:     28623993 [us]
+	//////// d_ = 8 /////////
+	f(q):         1971
+	g(i,r)(q):          916
+	r = f(q) mod l:          437
+	Q = G_1^(bn_dv) mod G:     28816790
+	/////////////////////////
+    __Open_pokRep_r_5       196262 total:     28820255 [us]
+	//////// d_ = 4 /////////
+	f(q):         1973
+	g(i,r)(q):          971
+	r = f(q) mod l:          441
+	Q = G_1^(bn_dv) mod G:     28904853
+	/////////////////////////
+    __Open_pokRep_r_6        88146 total:     28908401 [us]
+	//////// d_ = 2 /////////
+	f(q):         1975
+	g(i,r)(q):          993
+	r = f(q) mod l:          443
+	Q = G_1^(bn_dv) mod G:     28932430
+	/////////////////////////
+    __Open_pokRep_r_7        27618 total:     28936019 [us]
+	//////// d_ = 1 /////////
+	f(q):         1976
+	g(i,r)(q):         1004
+	r = f(q) mod l:          444
+	Q = G_1^(bn_dv) mod G:     28935333
+	/////////////////////////
+    __Open_pokRep_r_8         2926 total:     28938945 [us]
+__Poly_Open_pokReP total:     28938945 [us]
+__Poly_Open_D_i       385288 [us]
+
+__Poly_Open     31948463 [us]
+proof size 11917
+__Open_I/O_          831 [us]
+
+VERIFY....
+pokrep result>> 1
+g =? s_i>> 1
+g =? y_i>> 1
+|g| < b >> 1
+PoKReP_verify [0]       39039
+verify for [1]          71
+Poly_Verify        40797 [us]
+Verify_I/O_          401 [us]
+Verify Result [1]
+
+================ test n = 10 ================
+SETUP....
+n: 10 || d: 1024
+qbit: 2689
+d_bit 10 d-1024 q-2689
+KeyGen_Time       536068 [us]
+parameter size 7656
+KeyGen_I/O_          300 [us]
+
+OPEN....
+Start precomputation
+PRE_COMPUTE_g     14943549 [us]
+PRE_COMPUTE_(r_i + g)     29424089 [us]
+Commit_with_Precompute_Table       228908 [us]
+Commit_NEW_     15747221 [us]
+Commit_I/O_          598 [us]
+
+POKREP start
+	//////// d_ = 1024 /////////
+	f(q):         7653
+	g(i,r)(q):          477
+	r = f(q) mod l:          547
+	Q = G_1^(bn_dv) mod G:     47326995
+	/////////////////////////
+    __Open_pokRep_r     47335699 total:     47335699 [us]
+	//////// d_ = 512 /////////
+	f(q):         9402
+	g(i,r)(q):          659
+	r = f(q) mod l:          771
+	Q = G_1^(bn_dv) mod G:     64436466
+	/////////////////////////
+    __Open_pokRep_r_0     17111648 total:     64447347 [us]
+	//////// d_ = 256 /////////
+	f(q):        10158
+	g(i,r)(q):         1158
+	r = f(q) mod l:          911
+	Q = G_1^(bn_dv) mod G:     71748279
+	/////////////////////////
+    __Open_pokRep_r_1      7313221 total:     71760568 [us]
+	//////// d_ = 128 /////////
+	f(q):        10318
+	g(i,r)(q):         1430
+	r = f(q) mod l:          961
+	Q = G_1^(bn_dv) mod G:     74582231
+	/////////////////////////
+    __Open_pokRep_r_2      2834447 total:     74595015 [us]
+	//////// d_ = 64 /////////
+	f(q):        10384
+	g(i,r)(q):         1651
+	r = f(q) mod l:          989
+	Q = G_1^(bn_dv) mod G:     75896173
+	/////////////////////////
+    __Open_pokRep_r_3      1314273 total:     75909288 [us]
+	//////// d_ = 32 /////////
+	f(q):        10424
+	g(i,r)(q):         1787
+	r = f(q) mod l:         1004
+	Q = G_1^(bn_dv) mod G:     76527880
+	/////////////////////////
+    __Open_pokRep_r_4       631911 total:     76541199 [us]
+	//////// d_ = 16 /////////
+	f(q):        10456
+	g(i,r)(q):         1890
+	r = f(q) mod l:         1010
+	Q = G_1^(bn_dv) mod G:     76830504
+	/////////////////////////
+    __Open_pokRep_r_5       302777 total:     76843976 [us]
+	//////// d_ = 8 /////////
+	f(q):        10465
+	g(i,r)(q):         1984
+	r = f(q) mod l:         1014
+	Q = G_1^(bn_dv) mod G:     76970837
+	/////////////////////////
+    __Open_pokRep_r_6       140460 total:     76984436 [us]
+	//////// d_ = 4 /////////
+	f(q):        10466
+	g(i,r)(q):         2017
+	r = f(q) mod l:         1017
+	Q = G_1^(bn_dv) mod G:     77028268
+	/////////////////////////
+    __Open_pokRep_r_7        57488 total:     77041924 [us]
+	//////// d_ = 2 /////////
+	f(q):        10468
+	g(i,r)(q):         2038
+	r = f(q) mod l:         1019
+	Q = G_1^(bn_dv) mod G:     77047685
+	/////////////////////////
+    __Open_pokRep_r_8        19454 total:     77061378 [us]
+	//////// d_ = 1 /////////
+	f(q):        10469
+	g(i,r)(q):         2046
+	r = f(q) mod l:         1020
+	Q = G_1^(bn_dv) mod G:     77049934
+	/////////////////////////
+    __Open_pokRep_r_9         2266 total:     77063644 [us]
+__Poly_Open_pokReP total:     77063644 [us]
+__Poly_Open_D_i       700051 [us]
+
+__Poly_Open     83155122 [us]
+proof size 13123
+__Open_I/O_          806 [us]
+
+VERIFY....
+pokrep result>> 1
+g =? s_i>> 1
+g =? y_i>> 1
+|g| < b >> 1
+PoKReP_verify [0]       25208
+verify for [1]          73
+Poly_Verify        26322 [us]
+Verify_I/O_          323 [us]
+Verify Result [1]
+

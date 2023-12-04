@@ -144,3 +144,37 @@ Poly_Verify        23460 [us]
 Verify_I/O_          543 [us]
 Verify Result [1]
 
+================ test n = 11 ================
+
+n: 11 || d: 2048
+qbit: 2945
+d_bit 11 d-2048 q-2945
+KeyGen_Time       153669 [us]
+parameter size 8281
+KeyGen_I/O_           92 [us]
+
+Start precomputation
+Commit__PRE_Table     53521837 [us]
+Commit_with_Precompute_Table       569978 [us]
+Commit_NEW_     28636203 [us]
+Commit_I/O_          824 [us]
+r [0]       41159
+g(i,r)(q) [1]        4554
+r= x mod l [2]        2409
+/////////////
+Q [3]   220445163
+
+__Poly_Open    221809859 [us]
+proof size 14313
+__Open_I/O_         1072 [us]
+
+
+pokrep result>> 1
+g =? s_i>> 1
+g =? y_i>> 1
+|g| < b >> 1
+PoKReP_verify [0]       25274
+verify for [1]          62
+Poly_Verify        29592 [us]
+Verify_I/O_         1199 [us]
+Verify Result [1]

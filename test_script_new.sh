@@ -1,6 +1,6 @@
 #!/bin/bash
 
-FILENAME="./1119_trans_class_ver2"
+FILENAME="./1201_trans_class_2"
 
 echo "" > ${FILENAME}
 make clean_all

@@ -433,6 +433,9 @@ int KeyGen_Class_setup( _struct_pp_ *pp, const int lamda )
 		qfb_prime_form(pp->g, pp->G, fmpz_p);
     }while (!qfb_is_primitive(pp->g) || !qfb_is_reduced(pp->g) || fmpz_cmp((pp->g)->a, (pp->g)->b) <= 0 ); 
 
+	fmpz_abs(pp->L, pp->G);
+	fmpz_root(pp->L, pp->L, 4);
+	
 	BN_free(bn_4);
 	BN_free(bn_3);
 	BN_free(tmp);

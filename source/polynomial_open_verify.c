@@ -105,8 +105,6 @@ int open_multipoly(qfb_t* D, const _struct_polynomial_pp_* pp, const _struct_pol
     qfb_init(pp_tmp.g);
     fmpz_init(pp_tmp.L);
     fmpz_set(pp_tmp.L,pp->cm_pp.L);
-    // fmpz_abs(pp_tmp.L, pp->cm_pp.G);
-	// fmpz_root(pp_tmp.L, pp_tmp.L, 4);
     qfb_set(pp_tmp.g, pp->R[i]);
 
     // index i에 대해서만 d_i <- R_i^g_(i, R)(q) 계산 
@@ -127,6 +125,7 @@ int pokRep_open(fmpz_t r, fmpz_t s[], qfb_t Q, const fmpz_t l, const _struct_pol
     _struct_pp_ pp_tmp; 
     _struct_open_ open;
     _struct_commit_ cm;
+    unsigned long long int pokRep_R = 0, pokRep_r = 0;
 
     fmpz_init(open.r);
     qfb_init(open.Q);
@@ -139,39 +138,50 @@ int pokRep_open(fmpz_t r, fmpz_t s[], qfb_t Q, const fmpz_t l, const _struct_pol
     fmpz_init(pp_tmp.L);
     fmpz_set(pp_tmp.L, pp->cm_pp.L);
     
+    TimerOff();
+    printf("\nPOKREP start\n");
+    TimerOn();
 
-    pokRep_open_precom(&open, &cm, &pp_tmp, l, f, q, -1); // compute r ← x_1 mod ℓ, Q
+    pokRep_open_precom(&open, &cm, &pp_tmp, l, f, q, -1); // compute r ← x_1 mod ℓ, Q for f[q]
     fmpz_set(r, open.r); 
     fmpz_mod(r, r, l);
-
     // Q <- G_1^(bn_dv) mod G
-    qfb_nucomp(Q,Q,open.Q,pp->cm_pp.G,pp->cm_pp.L);
-    qfb_reduce(Q,Q,pp->cm_pp.G);
+    qfb_nucomp(Q,Q,open.Q,pp_tmp.G,pp_tmp.L);
+    qfb_reduce(Q,Q,pp_tmp.G);
+    pokRep_r += TimerOff();
+    printf("    __Open_pokRep_r %12llu total: %12llu [us]\n", pokRep_r, pokRep_r);
 
     // s, Q계산
-    for(int i=0 ; i < pp->n ; i++){
+    // compute r ← x_i mod ℓ, Q for R[q]
+    for(int i = 0; i < pp->n; i++){
+        TimerOn();
         fmpz_init(s[i]);
-        // fmpz_set(pp_tmp.g, pp->R[i]);
         qfb_set(pp_tmp.g,pp->R[i]);
-        //qfb_print(pp->R[i]);
-
         pokRep_open_precom(&open, &cm, &pp_tmp, l, &(*g)[i], q, i);
         fmpz_set(s[i], open.r);
         fmpz_mod(s[i], s[i], l);
-        qfb_nucomp(Q,Q,open.Q,pp->cm_pp.G,pp->cm_pp.L);
-        qfb_reduce(Q,Q,pp->cm_pp.G);
+        qfb_nucomp(Q,Q,open.Q,pp_tmp.G,pp_tmp.L);
+        qfb_reduce(Q,Q,pp_tmp.G);
+
+        pokRep_R = TimerOff();
+        pokRep_r += pokRep_R;
+        printf("    __Open_pokRep_r_%d %12llu total: %12llu [us]\n", i, pokRep_R, pokRep_r);
+
     }
+    printf("__Poly_Open_pokReP total: %12llu [us]\n", pokRep_r);
     
     fmpz_clear(open.r);
     qfb_clear(open.Q);
     fmpz_clear(pp_tmp.G);
     qfb_clear(pp_tmp.g);
     qfb_clear(cm.C);
+
+    return pokRep_r;
 }
 // prover compute proof: D_i, y_{i,r}, alpha
 int Open(_struct_proof_ *proof, _struct_polynomial_pp_* pp, _struct_commit_* cm, _struct_poly_* poly)
 {
-    unsigned long long int OPEN_RUNTIME = 0;
+    unsigned long long int OPEN_RUNTIME = 0, OPEN_MULTI = 0, OPEN_PokRep = 0, OPEN_LPRIME = 0;
     unsigned long long int RunTime[4] = {0};
     unsigned long long int* pRuntime = &OPEN_RUNTIME;
     BN_CTX* ctx = BN_CTX_new();
@@ -209,7 +219,6 @@ int Open(_struct_proof_ *proof, _struct_polynomial_pp_* pp, _struct_commit_* cm,
     for(i = 0; i < n; i++) fmpz_init(proof->y[i]);
 
     TimerOn();
-
     // set gX degree
     gX.d = poly->d + 1;
     (*pRuntime) += TimerOff();
@@ -223,7 +232,6 @@ int Open(_struct_proof_ *proof, _struct_polynomial_pp_* pp, _struct_commit_* cm,
         fmpz_set(gX.Fx[i], poly->Fx[i]);
 
     TimerOn();
-
     // set gL degree and init Fx
     gL.d = (poly->d+1)/2;
     (*pRuntime) += TimerOff();
@@ -267,7 +275,11 @@ int Open(_struct_proof_ *proof, _struct_polynomial_pp_* pp, _struct_commit_* cm,
         // 추가
         // TimerOn();
         // d_i <- R_i^g_(i, R)(q)
+        (*pRuntime) += TimerOff();
+        TimerOn();
         open_multipoly(proof->D, pp, gR[i], pp->q, i);
+        OPEN_MULTI += TimerOff();
+        (*pRuntime) += OPEN_MULTI;
         // 추가
         // RunTime[2] = TimerOff();
         // 추가
@@ -289,27 +301,23 @@ int Open(_struct_proof_ *proof, _struct_polynomial_pp_* pp, _struct_commit_* cm,
             fmpz_add(gX.Fx[j], gL.Fx[j], fmpz_tmp2); // g_(i+1) <- g_(i, L) + alpha_i * g_(i, R)
         }
     }
-    // RunTime[0] += TimerOff();
-    // (*pRuntime) += RunTime[0];
+
     (*pRuntime) += TimerOff();
     
     // 최종 상수항
     fmpz_set(proof->gx, gX.Fx[0]);
 
     TimerOn();
-
     // make l prime using proof->D
     Hprime_func(l_prime, proof->D, proof->n, cm->C);
+    OPEN_LPRIME += TimerOff();
+    (*pRuntime) += OPEN_LPRIME;
+
+    TimerOn();
     // input (G, g벡터, r벡터), CD, (f(q)벡터, g(q)벡터)
-    pokRep_open(proof->r, proof->s, proof->Q, l_prime, pp, pp->q, &gR, poly);
-
-    // RunTime[1] += TimerOff();
-    // (*pRuntime) += RunTime[1];
-    OPEN_RUNTIME += TimerOff();
-
-    // printf("__Poly_Open_for %12llu [us]\n", RunTime[0]);
-    // printf("__Poly_Open_PokRep %12llu [us]\n", RunTime[1]);
-    // printf("__Poly_Open_D_i %12llu [us]\n", RunTime[2]);
+    OPEN_PokRep += pokRep_open(proof->r, proof->s, proof->Q, l_prime, pp, pp->q, &gR, poly);
+    TimerOff();
+    (*pRuntime) += OPEN_PokRep;
 
     fmpz_clear(fmpz_tmp1);
     fmpz_clear(fmpz_tmp2);
@@ -333,6 +341,8 @@ int Open(_struct_proof_ *proof, _struct_polynomial_pp_* pp, _struct_commit_* cm,
     fmpz_clear(l_prime);
     fmpz_clear(CD);
 
+    printf("__Poly_Open_D_i %12llu [us]\n", OPEN_MULTI);
+    
     return OPEN_RUNTIME;
 }
 

@@ -20,26 +20,27 @@ int start_precomputation(_struct_polynomial_pp_* pp, const _struct_poly_ poly)
 	if(isprecomputed==0)
 	{
 		FILE *fp;
-		unsigned long long int RunTime1 = 0;
+		unsigned long long int RunTime1 = 0,RunTime2=0;
 		static int d;
-		TimerOff();
 		printf("Start precomputation\n");
-		TimerOn();
+
 		d = poly.d;
 		pre_table = (qfb_t**)calloc(pp->n + 1, sizeof(qfb_t*));
 		for(i = 0; i < pp->n + 1; i++)
 			pre_table[i] = (qfb_t*)calloc(d, sizeof(qfb_t));
-		// set precomputation table with generator and pp->R. [0][0] ~ [i][0]
 		qfb_init(pre_table[0][0]);
 		qfb_set(pre_table[0][0],pp->cm_pp.g);
-
+		
 		// R[i]
+		// set precomputation table with generator and pp->R. [0][0] ~ [i][0]
 		for(i=1; i<= pp->n; i++)
 		{
 			qfb_init(pre_table[i][0]);
 			qfb_set(pre_table[i][0],pp->R[i-1]);
 		}
-
+		TimerOff();
+		TimerOn();
+		// compute precomputation table [1][1] ~ [n][2^(D-1)-1] that R[0]^1,R[0]^q,...,R[0]^{q^(2^precomute_num-1)} mod G
 		for(i=1; i <= pp->n; i++)
 		{
 			d /= 2;
@@ -50,17 +51,23 @@ int start_precomputation(_struct_polynomial_pp_* pp, const _struct_poly_ poly)
 				qfb_reduce(pre_table[i][j], pre_table[i][j], pp->cm_pp.G);
 			}
 		}
+		RunTime1 = TimerOff();
+		TimerOn();
+		// [0][1] ~ [0][D] = q^1 ~ q^D 
 		for(j=1; j<poly.d; j++)
 		{
 			qfb_init(pre_table[0][j]);
 			qfb_pow_with_root(pre_table[0][j], pre_table[0][j-1], pp->cm_pp.G, pp->q, pp->cm_pp.L);
 			qfb_reduce(pre_table[0][j], pre_table[0][j], pp->cm_pp.G);
 		}
-		RunTime1 = TimerOff();
-		printf("Commit__PRE_Table %12llu [us]\n", RunTime1);
-		fp = fopen("record/precompute.txt", "a+");		
-		fprintf(fp, "%d %d %llu precompute\n", pp->cm_pp.security_level, poly.d, RunTime1);			
-		fclose(fp);
+		RunTime2 = TimerOff();
+		RunTime1 += RunTime2;
+		printf("PRE_COMPUTE_g %12llu [us]\n", RunTime2);
+		printf("PRE_COMPUTE_(r_i + g) %12llu [us]\n", RunTime1);
+		fp = fopen("record/precompute.txt", "a+");
+		fprintf(fp, "%d %d %llu precompute only g\n", pp->cm_pp.security_level, poly.d, RunTime2);			
+		fprintf(fp, "%d %d %llu precompute all\n", pp->cm_pp.security_level, poly.d, RunTime1);		
+		fclose(fp);	
 		TimerOn();
 	}
 
@@ -152,10 +159,7 @@ int pokRep_open_precom(_struct_open_* open, _struct_commit_* cm, const _struct_p
 	int numbits = fmpz_bits(q)-1;
 	int flag = 1, i = 0, j = 0, cnt = 0;
 	fmpz_t bn_tmp1;
-	fmpz_t bn_tmp2;
-	fmpz_t bn_tmp3;
 	fmpz_t bn_dv;
-	fmpz_t div_bn_dv;
 	fmpz_t mod_bn_dv;
 	qfb_t Q_pow;
 	fmpz_t bn_rem;
@@ -164,10 +168,7 @@ int pokRep_open_precom(_struct_open_* open, _struct_commit_* cm, const _struct_p
 	commit_init(&cm_tmp);
 
 	fmpz_init(bn_tmp1);
-	fmpz_init(bn_tmp2);
-	fmpz_init(bn_tmp3);
 	fmpz_init(bn_dv);
-	fmpz_init(div_bn_dv);
 	fmpz_init(mod_bn_dv);
 
 	qfb_init(Q_pow);
@@ -234,14 +235,6 @@ int pokRep_open_precom(_struct_open_* open, _struct_commit_* cm, const _struct_p
 
 		// qfb_pow_with_root(Q_pow, pre_table[index+1][poly->d], pp->G, bn_dv, pp->L);
 		RunTime[3] += TimerOff2(before+3, after+3);	
-		if(poly->d == 1)
-			{
-				printf("r [0]%12llu\n", RunTime[0]);
-				printf("g(i,r)(q) [1]%12llu\n", RunTime[1]);
-				printf("r= x mod l [2]%12llu\n", RunTime[2]);
-				printf("/////////////\n");
-				printf("Q [3]%12llu\n", RunTime[3]);
-			}
 	}
 	else
 	{
@@ -269,7 +262,7 @@ int pokRep_open_precom(_struct_open_* open, _struct_commit_* cm, const _struct_p
 				{
 					if(fmpz_tstbit(bn_dv, numbits*(i+offset) + j) == 1){
 						fmpz_setbit(parallel_tmp[i], j);								
-					}		
+					}
 				}
 
 			}
@@ -295,21 +288,16 @@ int pokRep_open_precom(_struct_open_* open, _struct_commit_* cm, const _struct_p
 		free(parallel_tmp);
 	}
 
-	// if(poly->d == 1)
-	// {
-	// 	printf("[0]%12llu\n", RunTime[0]);
-	// 	printf("[1]%12llu\n", RunTime[1]);
-	// 	printf("[2]%12llu\n", RunTime[2]);
-	// 	printf("/////////////\n");
-	// 	printf("[3]%12llu\n", RunTime[3]);
-	// 	printf("[4]%12llu\n", RunTime[4]);
-	// 	printf("[5]%12llu\n", RunTime[5]);
-	// 	printf("[6]%12llu\n", RunTime[6]);
-	// }
-
+	if(poly->d >= 1)
+	{
+		printf("	//////// d_ = %d /////////\n",poly->d);
+		printf("	f(q): %12llu\n", RunTime[0]);
+		printf("	g(i,r)(q): %12llu\n", RunTime[1]);
+		printf("	r = f(q) mod l: %12llu\n", RunTime[2]);
+		printf("	Q = G_1^(bn_dv) mod G: %12llu\n", RunTime[3]);
+		printf("	/////////////////////////\n");
+	}
 	fmpz_clear(bn_tmp1);
-	fmpz_clear(bn_tmp2);
-	fmpz_clear(bn_tmp3);
 	fmpz_clear(bn_dv);
 	fmpz_clear(bn_rem);	
 

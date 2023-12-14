@@ -54,10 +54,17 @@ int start_precomputation(_struct_polynomial_pp_* pp, const _struct_poly_ poly)
 		RunTime1 = TimerOff();
 		TimerOn();
 		// [0][1] ~ [0][D] = q^1 ~ q^D 
+		printf("q: " );qfb_print(pp->q);printf("\n");
+		printf("L: "); fmpz_print(pp->cm_pp.L);printf("\n");
+		printf("G: ");fmpz_print(pp->cm_pp.G);printf("\n");
+		printf("d: %d\n", poly.d);
 		for(j=1; j<poly.d; j++)
 		{
 			qfb_init(pre_table[0][j]);
 			qfb_pow_with_root(pre_table[0][j], pre_table[0][j-1], pp->cm_pp.G, pp->q, pp->cm_pp.L);
+			// RunTime2 = TimerOff();
+			// printf("qfb_pow_with_root %12llu [us]\n", RunTime2);
+			// TimerOn();
 			qfb_reduce(pre_table[0][j], pre_table[0][j], pp->cm_pp.G);
 		}
 		RunTime2 = TimerOff();
@@ -163,7 +170,6 @@ int pokRep_open_precom(_struct_open_* open, _struct_commit_* cm, const _struct_p
 	fmpz_t mod_bn_dv;
 	qfb_t Q_pow;
 	fmpz_t bn_rem;
-	fmpz_t q_bit;
 	_struct_commit_ cm_tmp;
 	commit_init(&cm_tmp);
 
@@ -177,6 +183,7 @@ int pokRep_open_precom(_struct_open_* open, _struct_commit_* cm, const _struct_p
 	TimerOn2(before);
 	fmpz_zero(open->r);
 
+	
 	// Fx[d-1]*{2^numbits*(d-1)}+...+Fx[0], where 2^numbits = q = F(q)
 	for(i = poly->d-1; i >= 0; i--)
 	{
@@ -215,20 +222,19 @@ int pokRep_open_precom(_struct_open_* open, _struct_commit_* cm, const _struct_p
 		// Q <- G_1^(bn_dv) mod G
 
 		int n = 0; // q진법의 index
-		fmpz_init_set_ui(q_bit, numbits);
-
-		fmpz_tdiv_r_2exp(mod_bn_dv, bn_dv, q_bit);
-		qfb_pow_with_root(Q_pow, pre_table[index+1][n], pp->G, mod_bn_dv, pp->L);
+	
+		fmpz_tdiv_r_2exp(mod_bn_dv, bn_dv, numbits); // bn_dv에서 qbit 쉬프트 제외 후, 나머지 mod_bn_dv
+		qfb_pow_with_root(Q_pow, pre_table[index+1][n], pp->G, mod_bn_dv, pp->L); // 나머지 가지고 지수승 -> 쉬프트된 qbit로 지수승
 		qfb_reduce(Q_pow, Q_pow, pp->G);
-		fmpz_tdiv_q_2exp(bn_dv, bn_dv, q_bit);
-		qfb_set(open->Q, Q_pow);
+		fmpz_tdiv_q_2exp(bn_dv, bn_dv, numbits); // bn_dv에서 qbit 제외
+		qfb_set(open->Q, Q_pow); // 최종 연산에 누적(Q=프로덕트G_i^[몫])
 		n++;
 
-		for(i = n; i < poly->d ; i++){
-			fmpz_tdiv_r_2exp(mod_bn_dv, bn_dv, q_bit); //BN_rshift1(bn_dv,q_bit);
+		for(i = n; i < poly->d ; i++){ 
+			fmpz_tdiv_r_2exp(mod_bn_dv, bn_dv, numbits); //BN_rshift1(bn_dv,numbits);
 			qfb_pow_with_root(Q_pow, pre_table[index+1][i], pp->G, mod_bn_dv, pp->L);
 			qfb_reduce(Q_pow, Q_pow, pp->G);
-			fmpz_tdiv_q_2exp(bn_dv, bn_dv, q_bit);
+			fmpz_tdiv_q_2exp(bn_dv, bn_dv, numbits);
 			qfb_nucomp(open->Q, open->Q, Q_pow, pp->G, pp->L);
 			qfb_reduce(open->Q, open->Q, pp->G);
 		}
@@ -288,15 +294,15 @@ int pokRep_open_precom(_struct_open_* open, _struct_commit_* cm, const _struct_p
 		free(parallel_tmp);
 	}
 
-	if(poly->d >= 1)
-	{
-		printf("	//////// d_ = %d /////////\n",poly->d);
-		printf("	f(q): %12llu\n", RunTime[0]);
-		printf("	g(i,r)(q): %12llu\n", RunTime[1]);
-		printf("	r = f(q) mod l: %12llu\n", RunTime[2]);
-		printf("	Q = G_1^(bn_dv) mod G: %12llu\n", RunTime[3]);
-		printf("	/////////////////////////\n");
-	}
+	// if(poly->d >= 1)
+	// {
+	// 	printf("	//////// d_ = %d /////////\n",poly->d);
+	// 	printf("	f(q): %12llu\n", RunTime[0]);
+	// 	printf("	g(i,r)(q): %12llu\n", RunTime[1]);
+	// 	printf("	r = f(q) mod l: %12llu\n", RunTime[2]);
+	// 	printf("	Q = G_1^(bn_dv) mod G: %12llu\n", RunTime[3]);
+	// 	printf("	/////////////////////////\n");
+	// }
 	fmpz_clear(bn_tmp1);
 	fmpz_clear(bn_dv);
 	fmpz_clear(bn_rem);	

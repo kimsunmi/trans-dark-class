@@ -7,7 +7,7 @@ int main(int argc, char *argv[])
 {
     int m  = 1; // polynomial batch = 1
     int LOG_D,D; // degree
-	int security_level = 2048; // lamda
+	int security_level = 512; // lamda
 	unsigned long long int RunTime = 0, RunTime_IO = 0;
     
     _struct_polynomial_pp_ pp={0};

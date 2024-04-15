@@ -80,6 +80,13 @@ int Write_pp(const _struct_polynomial_pp_* pp)
 		// printf("|R[%d]| %d\n", i, fmpz_bits(pp->R[i]));
 	}
 	printf("parameter size %d\n", pp_size);
+	
+	FILE *fp2;
+	fp2 = fopen("./record_pp.txt","a+");
+	fprintf(fp2,"---------public parameter-------\n");
+	fprintf("parameter size %d\n", pp_size);
+	fclose(fp2);
+	
 
 	FILE *fp;
 	fp = fopen("./Txt/pp.txt","w");
@@ -158,11 +165,18 @@ int Read_Commit(const char* path, _struct_commit_* cm)
 int Write_Commit(const char* path, const _struct_commit_* cm)
 {
 	int commit_size = 0;
-	commit_size += fmpz_bits(cm->C->a);
-	commit_size += fmpz_bits(cm->C->b);
-	commit_size += fmpz_bits(cm->C->c);
+	commit_size += (int)fmpz_bits(cm->C->a);
+	commit_size += (int)fmpz_bits(cm->C->b);
+	commit_size += (int)fmpz_bits(cm->C->c);
 
-	// printf("commit size %d\n", commit_size);
+	FILE *fp2;
+	fp2 = fopen("./record_pp.txt","a+");
+	fprintf(fp2,"------public parameter size---------\n");
+	fprintf(fp2,"cm.a: %d\n",(int)fmpz_bits(cm->C->a));
+	fprintf(fp2,"cm.b: %d\n",(int)fmpz_bits(cm->C->b));
+	fprintf(fp2,"cm.c: %d\n",(int)fmpz_bits(cm->C->c));
+	fprintf(fp2, "commit size %d\n", commit_size);
+	fclose(fp2);
 
 	FILE *fp;
 	int i = 0, flag = 1;
@@ -178,22 +192,34 @@ int Write_Commit(const char* path, const _struct_commit_* cm)
 }
 
 int Write_proof(const _struct_proof_ *proof )
-{
+{		
 	int proof_size = 0;
 	proof_size += fmpz_bits(proof->Q->a);
 	proof_size += fmpz_bits(proof->Q->b);
 	proof_size += fmpz_bits(proof->Q->c);
+	FILE *fp2;
+	fp2 = fopen("./record_pp.txt","a+");
+	fprintf(fp2,"------proof size---------\n");
+	// fprintf(fp2,"proof->Q.a: %d\n",fmpz_bits(proof->Q->a));
+	// fprintf(fp2,"proof->Q.b: %d\n",fmpz_bits(proof->Q->b));
+	// fprintf(fp2,"proof->Q.c: %d\n",fmpz_bits(proof->Q->c));
 	for(int i=0; i<proof->n; i++){
 		proof_size += fmpz_bits(proof->D[i]->a);
 		proof_size += fmpz_bits(proof->D[i]->b);
 		proof_size += fmpz_bits(proof->D[i]->c);
+		// fprintf(fp2,"proof->D[%d].a: %d\n",(i,fmpz_bits(proof->D[i]->a)));
+		// fprintf(fp2,"proof->D[%d].b: %d\n",(i,fmpz_bits(proof->D[i]->b)));
+		// fprintf(fp2,"proof->D[%d].c: %d\n",(i,fmpz_bits(proof->D[i]->c)));
 		proof_size += fmpz_bits(proof->s[i]);
+		// fprintf(fp2,"proof->s[%d]: %d\n",i,fmpz_bits(proof->s[i]));
 		proof_size += fmpz_bits(proof->y[i]);
+		// fprintf(fp2,"proof->y[%d]: %d\n",i,fmpz_bits(proof->y[i]));
 	}
 	proof_size += fmpz_bits(proof->gx);
 	proof_size += fmpz_bits(proof->r);
-
-	printf("proof size %d\n", proof_size);
+	fprintf(fp2, "proof size %d\n", proof_size);
+	fprintf(fp2,"-------------------------\n");
+	fclose(fp2);
 
 	FILE *fp;
 	int i = 0, flag = 1;

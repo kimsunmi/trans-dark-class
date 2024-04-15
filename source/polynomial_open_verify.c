@@ -318,6 +318,25 @@ int Open(_struct_proof_ *proof, _struct_polynomial_pp_* pp, _struct_commit_* cm,
     OPEN_PokRep += pokRep_open(proof->r, proof->s, proof->Q, l_prime, pp, pp->q, &gR, poly);
     TimerOff();
     (*pRuntime) += OPEN_PokRep;
+    
+    // int proof_size = 0;
+	// proof_size += (int)fmpz_bits(proof->Q->a);
+	// proof_size += (int)fmpz_bits(proof->Q->b);
+	// proof_size += (int)fmpz_bits(proof->Q->c);
+    // printf("proof->Q: %d\n",(int)fmpz_bits(proof->Q->a)+(int)fmpz_bits(proof->Q->b)+(int)fmpz_bits(proof->Q->c));
+    // for(int i=0; i<proof->n; i++){
+	// 	proof_size += (int)fmpz_bits(proof->D[i]->a);
+	// 	proof_size += (int)fmpz_bits(proof->D[i]->b);
+	// 	proof_size += (int)fmpz_bits(proof->D[i]->c);
+	// 	printf("proof->D[%d]: %d\n",i,(int)fmpz_bits(proof->D[i]->a)+(int)fmpz_bits(proof->D[i]->b)+(int)fmpz_bits(proof->D[i]->c));
+	// 	proof_size += (int)fmpz_bits(proof->s[i]);
+	// 	printf("proof->s[%d]: %d\n",i,(int)fmpz_bits(proof->s[i]));
+	// 	proof_size += (int)fmpz_bits(proof->y[i]);
+	// 	printf("proof->y[%d]: %d\n",i,(int)fmpz_bits(proof->y[i]));
+	// }
+	// proof_size += (int)fmpz_bits(proof->gx);
+	// proof_size += (int)fmpz_bits(proof->r);
+	// printf("proof size %d\n", proof_size);
 
     fmpz_clear(fmpz_tmp1);
     fmpz_clear(fmpz_tmp2);

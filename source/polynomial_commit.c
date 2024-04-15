@@ -54,17 +54,10 @@ int start_precomputation(_struct_polynomial_pp_* pp, const _struct_poly_ poly)
 		RunTime1 = TimerOff();
 		TimerOn();
 		// [0][1] ~ [0][D] = q^1 ~ q^D 
-		printf("q: " );qfb_print(pp->q);printf("\n");
-		printf("L: "); fmpz_print(pp->cm_pp.L);printf("\n");
-		printf("G: ");fmpz_print(pp->cm_pp.G);printf("\n");
-		printf("d: %d\n", poly.d);
 		for(j=1; j<poly.d; j++)
 		{
 			qfb_init(pre_table[0][j]);
 			qfb_pow_with_root(pre_table[0][j], pre_table[0][j-1], pp->cm_pp.G, pp->q, pp->cm_pp.L);
-			// RunTime2 = TimerOff();
-			// printf("qfb_pow_with_root %12llu [us]\n", RunTime2);
-			// TimerOn();
 			qfb_reduce(pre_table[0][j], pre_table[0][j], pp->cm_pp.G);
 		}
 		RunTime2 = TimerOff();

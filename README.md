@@ -1,6 +1,4 @@
-# Source Code: 
-
-# Efficient Transparent Polynomial Commitments for zk-SNARKs
+# Source Code: Efficient Transparent Polynomial Commitments for zk-SNARKs
 - This is source code for RSA group.
 
 # Requirments

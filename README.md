@@ -1,5 +1,5 @@
 # Source Code: Efficient Transparent Polynomial Commitments for zk-SNARKs
-- This is source code for RSA group.
+- This is source code for Class group.
 
 # Requirments
 - gmp, fmp, antic, openssl

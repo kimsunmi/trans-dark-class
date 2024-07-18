@@ -9,7 +9,7 @@
 # Start
 ```
 $ make all
-$ ./TRANS_Setup ${parameter bit} ${$$log(degree)=\mu$$}
+$ ./TRANS_Setup ${parameter bit} ${log(degree)}
 $ ./TRANS_Open
 $ ./TRANS_Verify 
 ```

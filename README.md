@@ -13,13 +13,12 @@ $ ./TRANS_Setup ${parameter bit} ${$$log(degree)=\mu$$}
 $ ./TRANS_Open
 $ ./TRANS_Verify 
 ```
-or execute parameter bit in all degree 7~14
+or The previously run parameters are stored in the 'previous_' folder, so execute with these parameters for all degrees from 7 to 14.
 ```
 $ make all
 $ ./test_script_new
 ```
-- check Unit Operation
+- check Unit Operation. It required parameters.
 ```
-$ ./TRANS_Setup ${parameter bit} ${log(degree)}
 $ ./unit_test
 ```

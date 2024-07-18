@@ -20,6 +20,6 @@ $ ./test_script_new
 ```
 - check Unit Operation
 ```
-$ ./TRANS_Setup ${parameter bit} ${$$log(degree)=\mu$$}
+$ ./TRANS_Setup ${parameter bit} ${log(degree)}
 $ ./unit_test
 ```

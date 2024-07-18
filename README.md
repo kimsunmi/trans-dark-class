@@ -10,7 +10,6 @@
 ```
 $ make all
 $ ./TRANS_Setup ${parameter bit} ${$$log(degree)=\mu$$}
-$ ./TRANS_Commit
 $ ./TRANS_Open
 $ ./TRANS_Verify 
 ```
@@ -19,4 +18,8 @@ or execute parameter bit in all degree 7~14
 $ make all
 $ ./test_script_new
 ```
-
+- check Unit Operation
+```
+$ ./TRANS_Setup ${parameter bit} ${$$log(degree)=\mu$$}
+$ ./unit_test
+```

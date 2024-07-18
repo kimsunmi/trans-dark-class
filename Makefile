@@ -1,6 +1,6 @@
-CC=gcc
-# CC=clang
-CFLAGS := -g -lm -lcrypto -lgmp -lflint -lantic -fopenmp -lpthread # -fsanitize=address
+# CC=gcc-13
+CC=clang
+CFLAGS := -g -lm -lcrypto -lgmp -lflint -lantic -g -fsanitize=address #-fopenmp -lpthread # 
 SOURCE_DIR = ./source/
 TEST_CODE_DIR = ./test_code/
 

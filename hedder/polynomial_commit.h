@@ -3,9 +3,9 @@
 	#include <string.h>
 	#include <sys/time.h>
 
+	#include <gmp.h>
 	#include <openssl/bn.h>
 	#include <openssl/sha.h>
-	#include <gmp.h>
 	#include <math.h>
 
 	#include <flint/fmpz.h>
@@ -26,7 +26,8 @@
 	
 	typedef struct{
 		fmpz_t* Fx; // polynomial coefficient
-		fmpz_t z; // random Z
+		fmpz_t* z; // random Z
+		fmpz_t* bz; // binary z (e.g. 1,z1,z2,z2z1,...)
 		fmpz_t fz; // F[z]
 		int d; // degree
 	}_struct_poly_;

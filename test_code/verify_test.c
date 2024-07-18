@@ -28,8 +28,7 @@ int main(int argc, char *argv[])
     Read_proof(&proof);
 
     RunTime_IO = TimerOff();
-
-    TimerOn(); // <-- verify time이 for문+PokRep 시간의 합일 텐데 그의 절반으로 나옴 issue
+    TimerOn(); 
     flag = Verify(&pp, &cm, poly.z, poly.fz, &proof);
     RunTime = TimerOff();
 

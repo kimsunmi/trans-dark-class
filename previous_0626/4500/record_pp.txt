@@ -1,0 +1,64 @@
+------public parameter size---------
+cm.a: 2249
+cm.b: 2248
+cm.c: 2250
+commit size 6747
+------proof size---------
+proof size 57809
+-------------------------
+------public parameter size---------
+cm.a: 2247
+cm.b: 2247
+cm.c: 2251
+commit size 6745
+------proof size---------
+proof size 65029
+-------------------------
+------public parameter size---------
+cm.a: 2249
+cm.b: 2246
+cm.c: 2250
+commit size 6745
+------proof size---------
+proof size 72314
+-------------------------
+------public parameter size---------
+cm.a: 2249
+cm.b: 2248
+cm.c: 2250
+commit size 6747
+------proof size---------
+proof size 79561
+-------------------------
+------public parameter size---------
+cm.a: 2249
+cm.b: 2247
+cm.c: 2250
+commit size 6746
+------proof size---------
+proof size 86797
+-------------------------
+------public parameter size---------
+cm.a: 2247
+cm.b: 2247
+cm.c: 2251
+commit size 6745
+------proof size---------
+proof size 94063
+-------------------------
+------public parameter size---------
+cm.a: 2248
+cm.b: 2248
+cm.c: 2250
+commit size 6746
+------proof size---------
+proof size 101299
+-------------------------
+------public parameter size---------
+cm.a: 2249
+cm.b: 2247
+cm.c: 2249
+commit size 6745
+------proof size---------
+proof size 108582
+-------------------------

@@ -29,6 +29,7 @@ int main(int argc, char *argv[])
     Read_poly(&poly);
     RunTime_IO = TimerOff();
 
+    printf("\n");
     // precomputation table base of g and R. (g,g^2,...g^pp->n , R[0],R[0]^q,...,R[n]^{q^(2^d-1)})
     start_precomputation(&pp, poly);
 
@@ -62,14 +63,14 @@ int main(int argc, char *argv[])
     // run proof algorithm
     OPEN_RUNTIME = Open(&proof, &pp, &cm, &poly);
 
-	printf("\n__Poly_Open %12llu [us]\n", OPEN_RUNTIME);
+	// printf("\nPoly_Open %12llu [us]\n", OPEN_RUNTIME);
 
     TimerOn();
     // write proof(Q,D,(r,s),gx,y) in file "./Txt/proof.txt"
     Write_proof(&proof);
     RunTime_IO += TimerOff();
     
-	printf("__Open_I/O_ %12llu [us]\n", RunTime_IO);
+	printf("Open_I/O_ %12llu [us]\n", RunTime_IO);
 
 	FILE *fp;
 	fp = fopen("record/open.txt", "a+");

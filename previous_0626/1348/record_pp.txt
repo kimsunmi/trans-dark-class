@@ -1,0 +1,64 @@
+------public parameter size---------
+cm.a: 673
+cm.b: 670
+cm.c: 674
+commit size 2017
+------proof size---------
+proof size 19964
+-------------------------
+------public parameter size---------
+cm.a: 670
+cm.b: 670
+cm.c: 676
+commit size 2016
+------proof size---------
+proof size 22472
+-------------------------
+------public parameter size---------
+cm.a: 673
+cm.b: 672
+cm.c: 674
+commit size 2019
+------proof size---------
+proof size 25011
+-------------------------
+------public parameter size---------
+cm.a: 672
+cm.b: 671
+cm.c: 674
+commit size 2017
+------proof size---------
+proof size 27558
+-------------------------
+------public parameter size---------
+cm.a: 672
+cm.b: 672
+cm.c: 674
+commit size 2018
+------proof size---------
+proof size 30092
+-------------------------
+------public parameter size---------
+cm.a: 673
+cm.b: 669
+cm.c: 674
+commit size 2016
+------proof size---------
+proof size 32576
+-------------------------
+------public parameter size---------
+cm.a: 669
+cm.b: 669
+cm.c: 678
+commit size 2016
+------proof size---------
+proof size 35117
+-------------------------
+------public parameter size---------
+cm.a: 670
+cm.b: 669
+cm.c: 677
+commit size 2016
+------proof size---------
+proof size 37648
+-------------------------

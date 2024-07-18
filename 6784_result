@@ -1,0 +1,194 @@
+
+================ compile w/ optimization option -O2 ================
+================ test n = 7 ================
+OPEN....
+
+Start precomputation
+PRE_COMPUTE_g     14078023 [us]
+PRE_COMPUTE_(r_i + g)     27330062 [us]
+Commit_with_Precompute_Table       366305 [us]
+Commit_NEW_     14558162 [us]
+Commit_I/O_         1927 [us]
+__Poly_PokRep____     43258650 [us]
+__poly_Open_total     51528972 [us]
+Open_I/O_         2327 [us]
+
+VERIFY....
+pokrep result>> 1
+g =? s_i>> 1
+g =? y_i>> 1
+|g| < b >> 1
+PoKReP_verify [0]      208079
+verify for [1]          68
+Poly_Verify       210834 [us]
+Verify_I/O_         1818 [us]
+Verify Result [1]
+
+================ test n = 8 ================
+OPEN....
+
+Start precomputation
+PRE_COMPUTE_g     32149646 [us]
+PRE_COMPUTE_(r_i + g)     63119503 [us]
+Commit_with_Precompute_Table       735947 [us]
+Commit_NEW_     33125244 [us]
+Commit_I/O_         2068 [us]
+__Poly_PokRep____    100101021 [us]
+__poly_Open_total    120127050 [us]
+Open_I/O_         2469 [us]
+
+VERIFY....
+pokrep result>> 1
+g =? s_i>> 1
+g =? y_i>> 1
+|g| < b >> 1
+PoKReP_verify [0]      228504
+verify for [1]          72
+Poly_Verify       231285 [us]
+Verify_I/O_         2120 [us]
+Verify Result [1]
+
+================ test n = 9 ================
+OPEN....
+
+Start precomputation
+PRE_COMPUTE_g     72205314 [us]
+PRE_COMPUTE_(r_i + g)    142718457 [us]
+Commit_with_Precompute_Table      1467461 [us]
+Commit_NEW_     74212289 [us]
+Commit_I/O_         2096 [us]
+__Poly_PokRep____    225238039 [us]
+__poly_Open_total    272133878 [us]
+Open_I/O_         2525 [us]
+
+VERIFY....
+pokrep result>> 1
+g =? s_i>> 1
+g =? y_i>> 1
+|g| < b >> 1
+PoKReP_verify [0]      248105
+verify for [1]          83
+Poly_Verify       250849 [us]
+Verify_I/O_         2033 [us]
+Verify Result [1]
+
+================ test n = 10 ================
+OPEN....
+
+Start precomputation
+PRE_COMPUTE_g    160745356 [us]
+PRE_COMPUTE_(r_i + g)    318645595 [us]
+Commit_with_Precompute_Table      2987779 [us]
+Commit_NEW_    165294992 [us]
+Commit_I/O_         2472 [us]
+__Poly_PokRep____    510462594 [us]
+__poly_Open_total    621222849 [us]
+Open_I/O_         2831 [us]
+
+VERIFY....
+pokrep result>> 1
+g =? s_i>> 1
+g =? y_i>> 1
+|g| < b >> 1
+PoKReP_verify [0]      273953
+verify for [1]          83
+Poly_Verify       276836 [us]
+Verify_I/O_         2257 [us]
+Verify Result [1]
+
+================ test n = 11 ================
+OPEN....
+
+Start precomputation
+PRE_COMPUTE_g    356218941 [us]
+PRE_COMPUTE_(r_i + g)    706269845 [us]
+Commit_with_Precompute_Table      6026209 [us]
+Commit_NEW_    365859617 [us]
+Commit_I/O_         3098 [us]
+__Poly_PokRep____   1137002957 [us]
+__poly_Open_total   1391483670 [us]
+Open_I/O_         3503 [us]
+
+VERIFY....
+pokrep result>> 1
+g =? s_i>> 1
+g =? y_i>> 1
+|g| < b >> 1
+PoKReP_verify [0]      292885
+verify for [1]         104
+Poly_Verify       295812 [us]
+Verify_I/O_         3094 [us]
+Verify Result [1]
+
+================ test n = 12 ================
+OPEN....
+
+Start precomputation
+PRE_COMPUTE_g    780079256 [us]
+PRE_COMPUTE_(r_i + g)   1547209211 [us]
+Commit_with_Precompute_Table     12127777 [us]
+Commit_NEW_    799969946 [us]
+Commit_I/O_         4313 [us]
+__Poly_PokRep____   2501088400 [us]
+__poly_Open_total   3075309881 [us]
+Open_I/O_         6005 [us]
+
+VERIFY....
+pokrep result>> 1
+g =? s_i>> 1
+g =? y_i>> 1
+|g| < b >> 1
+PoKReP_verify [0]      326780
+verify for [1]          97
+Poly_Verify       332145 [us]
+Verify_I/O_         4814 [us]
+Verify Result [1]
+
+================ test n = 13 ================
+OPEN....
+
+Start precomputation
+PRE_COMPUTE_g   1702131082 [us]
+PRE_COMPUTE_(r_i + g)   3373003583 [us]
+Commit_with_Precompute_Table     24237170 [us]
+Commit_NEW_   1745128359 [us]
+Commit_I/O_         8588 [us]
+__Poly_PokRep____   5405092950 [us]
+__poly_Open_total   6680218331 [us]
+Open_I/O_        10091 [us]
+
+VERIFY....
+pokrep result>> 1
+g =? s_i>> 1
+g =? y_i>> 1
+|g| < b >> 1
+PoKReP_verify [0]      339980
+verify for [1]         107
+Poly_Verify       344769 [us]
+Verify_I/O_         8043 [us]
+Verify Result [1]
+
+================ test n = 14 ================
+OPEN....
+
+Start precomputation
+PRE_COMPUTE_g   3700074743 [us]
+PRE_COMPUTE_(r_i + g)   7328529579 [us]
+Commit_with_Precompute_Table     49287451 [us]
+Commit_NEW_   3789387942 [us]
+Commit_I/O_        13226 [us]
+__Poly_PokRep____  11714747484 [us]
+__poly_Open_total  14551870103 [us]
+Open_I/O_        14559 [us]
+
+VERIFY....
+pokrep result>> 1
+g =? s_i>> 1
+g =? y_i>> 1
+|g| < b >> 1
+PoKReP_verify [0]      361167
+verify for [1]         110
+Poly_Verify       366143 [us]
+Verify_I/O_        12806 [us]
+Verify Result [1]
+

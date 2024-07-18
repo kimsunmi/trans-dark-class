@@ -2,7 +2,7 @@
 #include "../hedder/polynomial_open_verify.h"
 #include "../hedder/util.h"
 #include <unistd.h>
-#include <omp.h>
+// #include <omp.h>
 extern int global_num_threads;
 
 static qfb_t** pre_table;
@@ -173,7 +173,7 @@ int pokRep_open_precom(_struct_open_* open, _struct_commit_* cm, const _struct_p
 	qfb_init(Q_pow);
 	fmpz_init(bn_rem);	
 
-	TimerOn2(before);
+	// TimerOn2(before);
 	fmpz_zero(open->r);
 
 	
@@ -183,9 +183,9 @@ int pokRep_open_precom(_struct_open_* open, _struct_commit_* cm, const _struct_p
 		fmpz_mul_2exp(open->r, open->r, numbits); // r*2^q -> f[d-1]*2^q
 		fmpz_add(open->r, open->r, poly->Fx[i]);
 	}
-	RunTime[0] += TimerOff2(before, after);
+	// RunTime[0] += TimerOff2(before, after);
 
-	TimerOn2(before+1);
+	// TimerOn2(before+1);
 	fmpz_zero(bn_tmp1);
 
 	// g_(i, r)(q)계산 
@@ -197,9 +197,9 @@ int pokRep_open_precom(_struct_open_* open, _struct_commit_* cm, const _struct_p
 				fmpz_setbit(bn_tmp1, j + i*numbits);
 		}
 	}
-	RunTime[1] += TimerOff2(before+1, after+1);
+	// RunTime[1] += TimerOff2(before+1, after+1);
 
-	TimerOn2(before+2);
+	// TimerOn2(before+2);
 
 	// r = f(q) mod l
 	// f(q) / 1 - 몫: bn_dv, 나머지: bn_rem
@@ -207,11 +207,11 @@ int pokRep_open_precom(_struct_open_* open, _struct_commit_* cm, const _struct_p
 	fmpz_set(open->r, bn_rem);
 	int num_threads = 1;
 
-	RunTime[2] += TimerOff2(before+2, after+2);
+	// RunTime[2] += TimerOff2(before+2, after+2);
 
 	if(num_threads == 1)
 	{
-		TimerOn2(before+3);
+		// TimerOn2(before+3);
 		// Q <- G_1^(bn_dv) mod G
 
 		int n = 0; // q진법의 index
@@ -232,8 +232,7 @@ int pokRep_open_precom(_struct_open_* open, _struct_commit_* cm, const _struct_p
 			qfb_reduce(open->Q, open->Q, pp->G);
 		}
 
-		// qfb_pow_with_root(Q_pow, pre_table[index+1][poly->d], pp->G, bn_dv, pp->L);
-		RunTime[3] += TimerOff2(before+3, after+3);	
+		// RunTime[3] += TimerOff2(before+3, after+3);	
 	}
 	else
 	{
